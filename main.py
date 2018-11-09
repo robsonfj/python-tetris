@@ -8,8 +8,8 @@ pyglet.font.add_file('./assets/tetrominoes.ttf')
 
 def run(wind_width=800, wind_height=600):
     print("Start Game")
-    director.init(width=wind_width, height=wind_height, caption="TETRIS", fullscreen=False)
+    director.init(width=wind_width, height=wind_height, caption="TETRIS", fullscreen=False, resizable=False)
 
     director.run(Menu())
 
-run(800, 600)
+run(1024, 600)
