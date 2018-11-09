@@ -17,7 +17,8 @@ class Block:
         action = MoveBy((0,-700), 1)
         
         self.sprite.do(action)
-        
+
+
 
     def setPos(self, position):
         self.pos = position
