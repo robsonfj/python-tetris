@@ -3,12 +3,13 @@ import pyglet
 from cocos.sprite import Sprite
 
 def get_img_by_color(color):
-    return pyglet.resource.image('red.png')
+    img_name = color + '.png'
+    return pyglet.resource.image(img_name)
 
 class Block(Sprite):
-    def __init__(self, position, color):
-        self.chosen_color = color
+    def __init__(self, position, chosen_color):
+        self.chosen_color = chosen_color
         
-        image = get_img_by_color(self.color)
-        Sprite.__init__(self,image=image , position=position, rotation=0, scale=0.5)
+        image = get_img_by_color(chosen_color)
+        Sprite.__init__(self,image=image , position=position, rotation=0, scale=0.4)
         
