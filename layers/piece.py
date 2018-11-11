@@ -42,15 +42,39 @@ class Piece(Layer):
         except KeyError:
             self.p_matrix = matrixes_by_piece["Square"]
 
-        self.position = position        
-        first_block = Block(position, block_color='red')
-        self.blk_width = first_block.width
-        self.blk_height = first_block.height
+        self.position = position 
+        self.anchor = position
+
         self.blocks = []
-        self.blocks.append(first_block)
-        self.blocks.append(Block((position[0]+first_block.width, position[1]), block_color='red'))
-        self.blocks.append(Block((position[0]+first_block.width, position[1]+first_block.height), block_color='red'))
-        self.blocks.append(Block((position[0]+(first_block.width*2), position[1]+first_block.height), block_color='red'))
+
+        first_block = Block(position, block_color='red')
+        self.add(first_block)
+        i = 1
+        for j_array in self.p_matrix:
+            j = 1
+            for value in j_array:
+                if(i == j and i == 2):
+                    continue
+                if(value == 1):
+                    x = position[0]
+                    y = position[1]
+                    if(i < 2):
+                        x -= first_block.width 
+                    if(i > 2):
+                        x += first_block.width*(i-2)
+
+                    if(j < 2):
+                        y += first_block.height
+                    if(j > 2):
+                        y -= first_block.height*(j-2)
+                    print(i,',',j,'-', value)
+                    print(x,',',y)
+                    block = Block((x,y), block_color='red')
+                    self.blocks.append(block)
+                    self.add(block)
+                
+                j += 1
+            i += 1
 
     #def start_fall(self):
         #self.schedule_interval(self.move_piece_down,1)
