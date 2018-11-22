@@ -15,7 +15,13 @@ class Main_Game(Scene):
         Scene.__init__(self)
         self.add(Game_Area())
         self.add(Keyboard_Input()) # adiciona layer para obter imput do teclado
-        self.add(Piece((200,200), "L_inverted"))
+        self.add(Piece((200,170), "S"))
+        self.add(Piece((150,170), "S_inverted"))
+        self.add(Piece((260,160), "I"))
+        self.add(Piece((200,100), "T"))
+        self.add(Piece((260,100), "L"))
+        self.add(Piece((240,100), "L_inverted"))
+        self.add(Piece((200,260), "Square"))
         
         
         

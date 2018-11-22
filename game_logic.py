@@ -40,10 +40,6 @@ class Game_Logic:
     def sort_new_piece(self):
         #TODO
         return 0
-
-    def add_piece_blocksM(self):
-        #TODO
-        return 0
        
     def on_key_press(self, key, modifiers):
          #TODO
