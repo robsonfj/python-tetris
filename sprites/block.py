@@ -14,4 +14,3 @@ class Block(Sprite):
         
         image = get_img_by_color(block_color)
         Sprite.__init__(self,image=image , position=position, rotation=0, scale=0.4)
-        

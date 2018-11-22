@@ -54,11 +54,11 @@ class Piece(Layer):
 
         self.position = position 
         self.anchor = (0,0)
-
+    
         self.blocks = []
-
-        first_block = Block(position, block_color= piece_colors[self.p_type])
+        first_block = Block((0,0), block_color= piece_colors[self.p_type])
         self.add(first_block)
+        self.blocks.append(first_block)
 
         i = 1
         for j_array in build_matrix:
@@ -68,8 +68,8 @@ class Piece(Layer):
                     j += 1
                     continue
                 if(value == 1):
-                    x = position[0]
-                    y = position[1]
+                    x = 0
+                    y = 0
                     # coloca os blocos nas posicoes corretas de acordo com a matriz 4x4
                     if(i < 2):
                         y += first_block.height

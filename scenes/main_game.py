@@ -8,7 +8,8 @@ from layers.game_area import Game_Area
 class Main_Game(Scene):
     is_event_handler = True
     def __init__(self):
-
+        self.anchor = (0,0)
+        self.position = (0,0)
         Scene.__init__(self)
         self.add(Game_Area())
         self.add(Keyboard_Input()) # adiciona layer para obter imput do teclado
