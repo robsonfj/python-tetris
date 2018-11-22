@@ -3,7 +3,7 @@ from cocos.layer import Layer
 from cocos.sprite import Sprite
 from cocos.actions.interval_actions import MoveBy
 import pyglet
-matrixes_by_piece = {"S":[[0,1,1,0],
+piece_types = {"S":[[0,1,1,0],
                           [1,1,0,0],
                           [0,0,0,0],
                           [0,0,0,0]],
@@ -32,7 +32,7 @@ matrixes_by_piece = {"S":[[0,1,1,0],
                           [0,0,0,0],
                           [0,0,0,0]]
 }
-color_by_piece = {
+piece_colors = {
     "S":            "lightblue",
     "S_inverted":   "blue",
     "T":            "green",
@@ -47,20 +47,19 @@ class Piece(Layer):
         Layer.__init__(self)
         try:
             self.p_type = p_type
-            build_matrix = matrixes_by_piece[self.p_type] 
+            build_matrix = piece_types[self.p_type] 
         except KeyError:
-            self.p_type = "Square"
-            build_matrix = matrixes_by_piece[self.p_type]
+            self.p_type = "Square" # peca padrao caso valor passado seja incorreto
+            build_matrix = piece_types[self.p_type]
 
         self.position = position 
-        self.anchor = position
+        self.anchor = (0,0)
 
         self.blocks = []
 
-        first_block = Block(position, block_color= color_by_piece[self.p_type])
+        first_block = Block(position, block_color= piece_colors[self.p_type])
         self.add(first_block)
-        print(2,',',2,'-', 1)
-        print(position[0],',',position[1])
+
         i = 1
         for j_array in build_matrix:
             j = 1
@@ -71,7 +70,7 @@ class Piece(Layer):
                 if(value == 1):
                     x = position[0]
                     y = position[1]
-                    
+                    # coloca os blocos nas posicoes corretas de acordo com a matriz 4x4
                     if(i < 2):
                         y += first_block.height
                     if(i > 2):
@@ -82,9 +81,7 @@ class Piece(Layer):
                     if(j > 2):
                         x += first_block.width*(j-2)
 
-                    print(i,',',j,'-', value)
-                    print(x,',',y)
-                    block = Block((x,y), block_color= color_by_piece[self.p_type])
+                    block = Block((x,y), block_color= piece_colors[self.p_type])
                     self.blocks.append(block)
                     self.add(block)
                 
