@@ -6,7 +6,7 @@ from cocos.menu import MenuItem
 from cocos.director import director
 from cocos.sprite import Sprite
 from cocos.text import Label
-import game_logic
+import game_controller
 
 
 class Menu(Scene) :
@@ -22,10 +22,10 @@ class Menu(Scene) :
         menu.font_item_selected["font_name"] = "Ravie"
         
         menu_items = [
-            MenuItem('Start Game', game_logic.game_logic.init_new_game),
+            MenuItem('Start Game', game_controller.game_controller.init_new_game),
             MenuItem('Ranking', None ),
             MenuItem('Options', None ),
-            MenuItem('Quit', game_logic.game_logic.close_game )
+            MenuItem('Quit', game_controller.game_controller.close_game )
         ]
 
         menu.create_menu( menu_items )
@@ -37,6 +37,9 @@ class Menu(Scene) :
     def on_enter(self):
         director.push_handlers(self.on_cocos_resize)
         super(Menu, self).on_enter()
+
+    def on_quit(self):
+        return super(Menu, self).on_exit()
 
     def on_cocos_resize(self, usable_width, usable_height):
         pass
