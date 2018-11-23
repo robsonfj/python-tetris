@@ -1,7 +1,7 @@
-from game_logic import game_logic
+from game_controller import game_controller
 
 def start():    
-    game_logic.init(1024, 600)
-    game_logic.run()
+    game_controller.init(1024, 600)
+    game_controller.run()
 
 start()

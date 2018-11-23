@@ -1,7 +1,8 @@
 from sprites.block import Block
 from cocos.layer import Layer
 from cocos.sprite import Sprite
-from cocos.actions.interval_actions import MoveBy
+from cocos.actions import MoveBy
+from cocos.actions import RotateBy
 import pyglet
 piece_types = {"S":[[0,1,1,0],
                           [1,1,0,0],
@@ -55,10 +56,12 @@ class Piece(Layer):
         self.position = position 
         self.anchor = (0,0)
 
-        self.blocks = []
+        self.is_stopped = True
 
-        first_block = Block(position, block_color= piece_colors[self.p_type])
+        self.blocks = []
+        first_block = Block((0,0), block_color= piece_colors[self.p_type])
         self.add(first_block)
+        self.blocks.append(first_block)
 
         i = 1
         for j_array in build_matrix:
@@ -68,8 +71,8 @@ class Piece(Layer):
                     j += 1
                     continue
                 if(value == 1):
-                    x = position[0]
-                    y = position[1]
+                    x = 0
+                    y = 0
                     # coloca os blocos nas posicoes corretas de acordo com a matriz 4x4
                     if(i < 2):
                         y += first_block.height
@@ -88,11 +91,28 @@ class Piece(Layer):
                 j += 1
             i += 1
 
-    #def start_fall(self):
-        #self.schedule_interval(self.move_piece_down,1)
+    def start_fall(self):
+        self.is_stopped = False
+        self.schedule_interval(self.do_fall, 1.2)
 
-    #def stop_fall(self):
-        #self.schedule_interval(self.move_piece_down,0)
+    def do_fall(self, time_elapsed):
+        print("x-",self.x)
+        print("y-",self.y)
+        if(self.y >= 50 or self.is_stopped):
+            action = MoveBy((0,-25),0)
+            self.do(action)
+
+    def stop_fall(self):
+        self.unschedule(self.do_fall)
+    
+    def move(self, amount):
+        action = MoveBy(amount,0)
+        self.do(action)
+
+    def rotate(self):
+        action = RotateBy(90,0)
+        self.do(action)
+
+    def retrieve_blocks(self):
+        pass
         
-    #def move_piece_down(self):
-        #self.y -= self.blk_height
