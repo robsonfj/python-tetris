@@ -19,5 +19,7 @@ class Game_Area(Layer):
             self.add(Block((init_pos_x+ (tmp_block.width*17), init_pos_y+ (i*tmp_block.height)), block_color='gray'))
         for i in range(18):
             self.add(Block((init_pos_x+ (i*tmp_block.width),tmp_block.height/2), block_color='gray'))
+        self.score = Label("0",position=(880,350),font_name = "Ravie", align = "center",anchor_x = "center")
+        self.add(self.score)
 
         

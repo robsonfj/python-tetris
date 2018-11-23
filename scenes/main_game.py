@@ -22,7 +22,8 @@ class Main_Game(Scene):
         self.pos_piece_next = (874, 500)
         self.pos_piece_start = (425, 512)
 
-        self.add(Game_Area())
+        self.game_area = Game_Area()
+        self.add(self.game_area)
         keybd_input = Keyboard_Input()
         keybd_input.on_key_press = self.on_key_press 
         keybd_input.on_key_release = self.on_key_release 
@@ -71,6 +72,9 @@ class Main_Game(Scene):
         pass
 
     def check_collision(self, time_elapsed):
+        self.currentScore += 15
+        self.game_area.score.element.text = str(self.currentScore)
+
         #for obj in CollisionManager.iter_colliding (self.currPiece):
             #print("colission", obj)
         pass
