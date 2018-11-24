@@ -18,4 +18,5 @@ class Block(Sprite):
         Sprite.__init__(self,image=image , position=position, rotation=0, scale=scale)
         self.anchor = (self.width/2, self.height/2)
 
+        #retangulo para calculo de colisao
         self.cshape = collision_model.AARectShape(eu.Vector2(self.width/2, self.height/2), self.width/2, self.height/2)

@@ -1,6 +1,4 @@
 import cocos
-import random
-import time
 from pyglet.window.key import symbol_string
 from cocos.layer import Layer
 from cocos.text import Label
@@ -9,8 +7,11 @@ import cocos.collision_model as collision_model
 from sprites.block import Block
 from layers.keyboard_input import Keyboard_Input
 from layers.game_area import Game_Area
-from layers.piece import Piece
-from layers.piece import piece_types
+from layers.next_piece import Next_Piece
+from sprites.piece import Piece
+
+POS_NEW_PIECE = (425, 512)# define posicao da nova peca
+
 
 class Main_Game(Scene):
     is_event_handler = True
@@ -20,8 +21,6 @@ class Main_Game(Scene):
         Scene.__init__(self)
         
         self.blocks = []
-        self.pos_piece_next = (874, 500)
-        self.pos_piece_start = (425, 512)
         
         self.game_area = Game_Area()
         self.add(self.game_area)# adiciona layer da area do jogo
@@ -31,31 +30,22 @@ class Main_Game(Scene):
         keybd_input.on_key_release = self.on_key_release 
         self.add(Keyboard_Input()) # adiciona layer para obter imput do teclado
         
-        self.c_manager = collision_model.CollisionManager()
+        self.c_manager = collision_model.CollisionManager# inicializa gerenciador de colisao
         
-        self.schedule_interval(self.check_collision, 1)
-        
-    def on_key_press(self, key, modifiers):
-        print(key)
+        self.schedule_interval(self.check_collision, 0.2) # checa colisao a cada 200ms
 
     def start(self):
         self.currentScore = 0
-        self.nextPiece = Piece(self.pos_piece_next, self.sort_new_piece())
-        self.currPiece = Piece(self.pos_piece_start, self.sort_new_piece()) 
-        self.add(self.nextPiece)
-        self.add(self.currPiece)
+        self.nextPieceLayer = Next_Piece()
+        self.add(self.nextPieceLayer)# adiciona layer de visualizacao de peca a cena
+
+        self.currPiece = self.nextPieceLayer.get_next_piece() # obtem peca inicial(a primeira proxima peca...)
+        self.currPiece.position = POS_NEW_PIECE
+        self.add(self.currPiece)# adiciona peca atual ao cena
         
         self.currPiece.start_fall()
-
-    def sort_new_piece(self):
-        count = 1
-        random.seed(time.time())
-        chosen = random.randint(1, len(piece_types.keys()))
-        for key, _ in piece_types.items():
-            if(count >= chosen):
-                return key
-            count += 1
-        return "square"
+        self.c_manager.add(self.currPiece)# adiciona peca atual ao gerenciador de colisao
+    
 
     def on_key_press(self, key, modifiers):
         key_string = symbol_string(key)# obtem o valor em string da tecla pressionada 
@@ -76,9 +66,9 @@ class Main_Game(Scene):
 
     def check_collision(self, time_elapsed):
         self.currentScore += 15
-        self.game_area.scoreLabel.element.text = str(self.currentScore)
+        self.game_area.update_score(self.currentScore) 
 
 
-        #for obj in CollisionManager.iter_colliding (self.currPiece):
+        #for obj in self.c_manager.iter_colliding(self.currPiece):
             #print("colission", obj)
         pass
