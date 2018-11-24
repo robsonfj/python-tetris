@@ -75,6 +75,7 @@ class Main_Game(Scene):
         self.currentScore += 15
         self.game_area.score.element.text = str(self.currentScore)
 
+
         #for obj in CollisionManager.iter_colliding (self.currPiece):
             #print("colission", obj)
         pass
