@@ -42,12 +42,13 @@ class Piece(Sprite):
         
         self.is_stopped = True
         self.position = position
-        
+
         #inicializa os blocos nas posicoes obtidas do dicionario de pecas
         for offset in blocks_offsets:
             blk_pos = getPosition(offset)
             block = Block(blk_pos, block_color= piece_colors[self.p_type], b_type='Piece', scale=0.4)
             self.add(block)
+            block.set_cshape_center(getPosition(offset, self.position)) # realinha o centro do retangulo de colisao
 
     def start_fall(self):
         self.is_stopped = False
@@ -61,13 +62,28 @@ class Piece(Sprite):
         self.do(action)
 
     def stop_fall(self):
-        self.unschedule(self.do_fall)
+        try:
+            self.unschedule(self.do_fall)
+            self.parent.currentScore += 15
+            self.parent.wall_limits.update_score(self.currentScore) 
+        except:
+            print("Error! Piece stop_fall")
+        
     
     def move(self, amount):
         action = MoveBy(amount,0)
         self.do(action)
+        self.update_blocks()
 
     def rotate(self):
         action = RotateBy(90,0)
         self.do(action)
-        
+        self.update_blocks()
+
+    def update_blocks(self):
+        count = 0
+        for (_,block) in self.children :
+            offset = piece_types[self.p_type][count]
+            block.set_cshape_center(getPosition(offset, self.position)) # realinha o centro do retangulo de colisao
+            count += 1
+

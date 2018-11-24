@@ -24,7 +24,10 @@ class Wall_Limits(Layer):
         Layer.__init__(self)
 
         self.add(Sprite(image=pyglet.resource.image('game_background.jpg') , position=(self.anchor_x,self.anchor_y)))# Background Image
-        
+
+        self.scoreLabel = Label("0",position=(880,350),font_name = "Ravie", align = "center",anchor_x = "center")# texto onde mostra o score atual
+        self.add(self.scoreLabel)
+
         self.game_controller = game_controller.game_controller
         self.c_manager =  self.game_controller.c_manager# obtem instancia do gerenciador de colisao
 
@@ -34,25 +37,24 @@ class Wall_Limits(Layer):
         init_pos_y = tmp_block.height+tmp_block.height/2
         
         for i in range(23):
-            blk = Block((init_pos_x, init_pos_y+ (i*tmp_block.height)), block_color='gray', scale=scale)
+            blk = Block((init_pos_x, init_pos_y+ (i*tmp_block.height)), block_color='gray', scale=scale, b_type="LeftWall")
             self.add(blk)
-            
-            blk = Block((init_pos_x+ (tmp_block.width*17), init_pos_y+ (i*tmp_block.height)), block_color='gray', scale=scale)
+            #self.c_manager.add(blk)
+
+            blk = Block((init_pos_x+ (tmp_block.width*17), init_pos_y+ (i*tmp_block.height)), block_color='gray', scale=scale, b_type="RightWall")
             self.add(blk)
-            
-        self.c_manager.add(Wall_Rect(init_pos_x, tmp_block.width, init_pos_y, 23*tmp_block.height, b_type="LeftWall"))
-        self.c_manager.add(Wall_Rect(init_pos_x, tmp_block.width, init_pos_y, 23*tmp_block.height, b_type="RightWall"))
+            #self.c_manager.add(blk)
+        self.c_manager.add(Wall_Rect(init_pos_x+tmp_block.width/2, tmp_block.width, init_pos_y+tmp_block.height/2, 23*tmp_block.height, b_type="LeftWall"))
+        self.c_manager.add(Wall_Rect(init_pos_x+tmp_block.width/2 + (tmp_block.width*15), tmp_block.width, init_pos_y, 23*tmp_block.height, b_type="RightWall"))
 
         for i in range(18):
-            blk = Block((init_pos_x+ (i*tmp_block.width),tmp_block.height/2), block_color='gray',scale=scale)
+            blk = Block((init_pos_x+ (i*tmp_block.width),tmp_block.height/2), block_color='gray',scale=scale, b_type="Base")
             self.add(blk)
-        
-        self.c_manager.add(Wall_Rect(init_pos_x, 18*tmp_block.width, tmp_block.height/2, tmp_block.height, b_type="Base"))
+            #self.c_manager.add(blk)
+        self.c_manager.add(Wall_Rect(init_pos_x+tmp_block.width/2, 18*tmp_block.width, init_pos_y+tmp_block.height/2, tmp_block.height, b_type="Base"))
 
-        self.scoreLabel = Label("0",position=(880,350),font_name = "Ravie", align = "center",anchor_x = "center")
-        self.add(self.scoreLabel)
 
-    def update_score(self, score):
+    def update_score(self, score):# atualiza o label mostrando o score
         try:
             self.scoreLabel.element.text = str(score)
         except:

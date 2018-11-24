@@ -20,4 +20,7 @@ class Block(Sprite):
         
         if(not b_type == ''):
             #retangulo para calculo de colisao
-            self.cshape = collision_model.AARectShape(Vector2(self.anchor[0], self.anchor[1]), self.width/2, self.height/2)
+            self.cshape = collision_model.AARectShape(Vector2(self.x + self.anchor[0], self.y + self.anchor[1]), self.width/2, self.height/2)
+
+    def set_cshape_center(self, center):
+        self.cshape.center = Vector2(center[0], center[1])
