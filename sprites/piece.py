@@ -42,25 +42,23 @@ class Piece(Sprite):
         
         self.is_stopped = True
         self.position = position
-        self.blocks = []
         
         #inicializa os blocos nas posicoes obtidas do dicionario de pecas
         for offset in blocks_offsets:
             blk_pos = getPosition(offset)
-            block = Block(blk_pos, block_color= piece_colors[self.p_type], scale=0.4)
-            self.blocks.append(block)
+            block = Block(blk_pos, block_color= piece_colors[self.p_type], b_type='Piece', scale=0.4)
             self.add(block)
 
     def start_fall(self):
         self.is_stopped = False
-        self.schedule_interval(self.do_fall, 1.2)
+        self.schedule_interval(self.do_fall, 1)
 
     def do_fall(self, time_elapsed):
         print("x-",self.x)
         print("y-",self.y)
-        if(self.y >= 50 or self.is_stopped):
-            action = MoveBy((0,-25),0)
-            self.do(action)
+        
+        action = MoveBy((0,-25),0)
+        self.do(action)
 
     def stop_fall(self):
         self.unschedule(self.do_fall)
@@ -72,7 +70,4 @@ class Piece(Sprite):
     def rotate(self):
         action = RotateBy(90,0)
         self.do(action)
-
-    def retrieve_blocks(self):
-        pass
         

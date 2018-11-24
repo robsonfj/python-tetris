@@ -19,7 +19,7 @@ def sort_new_piece():
 
 POS_NX_PIECE = (874, 500)# define posicao fixa da proxima peca
 
-class Next_Piece(Layer):
+class Game_Info(Layer):
     def __init__(self):
         Layer.__init__(self)
         

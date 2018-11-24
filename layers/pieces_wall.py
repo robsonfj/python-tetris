@@ -46,14 +46,4 @@ class Pieces_Wall(Layer):
 
         except:
             print("Error! Pieces_Wall check_line")
-
-    def removed_line(self, pos_y):
-        try:
-            for (key, value) in self.same_line_blks.items():
-                if(key > pos_y):
-                    
-                    
-        except:
-            print("Error! Pieces_Wall check_line")
-        
     

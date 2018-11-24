@@ -2,7 +2,7 @@ import cocos
 import pyglet
 from cocos.director import director
 from cocos.scene import Scene
-from cocos.layer import Layer
+from cocos.collision_model import CollisionManagerGrid
 from cocos.text import Label
 from scenes.main_game import Main_Game
 from scenes.menu import Menu
@@ -16,6 +16,7 @@ class Game_Controller:
         
     def init( self,wind_width=800, wind_height=600):
         director.init(width=wind_width, height=wind_height, caption="TETRIS", fullscreen=False, resizable=False)
+        self.c_manager = CollisionManagerGrid(0,wind_width, 0, wind_height, 25, 25)# inicializa gerenciador de colisao
         
     def run(self):
         director.run(Menu())
