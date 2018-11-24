@@ -1,10 +1,12 @@
-from sprites.block import Block
+import pyglet
 from cocos.layer import Layer
 from cocos.sprite import Sprite
 from cocos.actions import MoveBy
 from cocos.actions import RotateBy
-import pyglet
-piece_types = {"S":[[0,1,1,0],
+from sprites.block import Block
+
+piece_types = {
+                     "S":[[0,1,1,0],
                           [1,1,0,0],
                           [0,0,0,0],
                           [0,0,0,0]],
@@ -43,46 +45,38 @@ piece_colors = {
     "Square":       "orange"
 }
 
-class Piece(Layer):
+class Piece(Sprite):
     def __init__(self, position, p_type):
-        Layer.__init__(self)
+        Sprite.__init__(self, pyglet.resource.image("block_template.png"),scale=0.4)
         try:
             self.p_type = p_type
-            build_matrix = piece_types[self.p_type] 
+            build_matrix = piece_types[self.p_type]
         except KeyError:
             self.p_type = "Square" # peca padrao caso valor passado seja incorreto
             build_matrix = piece_types[self.p_type]
-
-        self.position = position 
-        self.anchor = (0,0)
-
+        
         self.is_stopped = True
-
+        self.position = position
+        self.anchor = (self.width/2, self.height/2)
         self.blocks = []
-        first_block = Block((0,0), block_color= piece_colors[self.p_type])
-        self.add(first_block)
-        self.blocks.append(first_block)
 
         i = 1
         for j_array in build_matrix:
             j = 1
             for value in j_array:
-                if(i == j and i == 2):
-                    j += 1
-                    continue
                 if(value == 1):
                     x = 0
                     y = 0
                     # coloca os blocos nas posicoes corretas de acordo com a matriz 4x4
                     if(i < 2):
-                        y += first_block.height
+                        y += self.height*2
                     if(i > 2):
-                        y -= first_block.height*(i-2)
+                        y -= self.height*(i-2)*2
 
                     if(j < 2):
-                        x -= first_block.width 
+                        x -= self.width *2
                     if(j > 2):
-                        x += first_block.width*(j-2)
+                        x += self.width*(j-2)*2
 
                     block = Block((x,y), block_color= piece_colors[self.p_type])
                     self.blocks.append(block)

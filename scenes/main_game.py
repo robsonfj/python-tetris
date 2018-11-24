@@ -3,8 +3,9 @@ import random
 import time
 from pyglet.window.key import symbol_string
 from cocos.layer import Layer
+from cocos.text import Label
 from cocos.scene import Scene
-from cocos.collision_model import CollisionManager
+import cocos.collision_model as collision_model
 from sprites.block import Block
 from layers.keyboard_input import Keyboard_Input
 from layers.game_area import Game_Area
@@ -21,15 +22,17 @@ class Main_Game(Scene):
         self.blocks = []
         self.pos_piece_next = (874, 500)
         self.pos_piece_start = (425, 512)
-
+        
         self.game_area = Game_Area()
-        self.add(self.game_area)
+        self.add(self.game_area)# adiciona layer da area do jogo
+
         keybd_input = Keyboard_Input()
         keybd_input.on_key_press = self.on_key_press 
         keybd_input.on_key_release = self.on_key_release 
         self.add(Keyboard_Input()) # adiciona layer para obter imput do teclado
         
-        self.collision_manager = CollisionManager()
+        self.c_manager = collision_model.CollisionManager()
+        
         self.schedule_interval(self.check_collision, 1)
         
     def on_key_press(self, key, modifiers):
@@ -41,7 +44,7 @@ class Main_Game(Scene):
         self.currPiece = Piece(self.pos_piece_start, self.sort_new_piece()) 
         self.add(self.nextPiece)
         self.add(self.currPiece)
-
+        
         self.currPiece.start_fall()
 
     def sort_new_piece(self):
@@ -73,7 +76,7 @@ class Main_Game(Scene):
 
     def check_collision(self, time_elapsed):
         self.currentScore += 15
-        self.game_area.score.element.text = str(self.currentScore)
+        self.game_area.scoreLabel.element.text = str(self.currentScore)
 
 
         #for obj in CollisionManager.iter_colliding (self.currPiece):

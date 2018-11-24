@@ -37,6 +37,5 @@ class Game_Controller:
         self.main_game.on_key_release(key, modifiers)
         
 
-    
 
 game_controller = Game_Controller()
