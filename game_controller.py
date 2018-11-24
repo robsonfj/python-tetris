@@ -1,5 +1,6 @@
 import cocos
 import pyglet
+from pyglet.window.key import symbol_string
 from cocos.director import director
 from cocos.scene import Scene
 from cocos.collision_model import CollisionManagerGrid
@@ -29,14 +30,17 @@ class Game_Controller:
         director.push(self.main_game)
         
         self.main_game.start()
+
+
+    def game_over(self):
+        self.c_manager.clear()# limpa lista de objetos com colisao
        
+
     def on_key_press(self, key, modifiers):
         self.main_game.on_key_press(key, modifiers)
-        
 
     def on_key_release(self, key, modifiers):
         self.main_game.on_key_release(key, modifiers)
         
-
 
 game_controller = Game_Controller()

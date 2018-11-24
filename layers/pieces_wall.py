@@ -7,7 +7,7 @@ from sprites.block import Block
 from sprites.piece import piece_types
 from cocos.layer import Layer
 from cocos.sprite import Sprite
-
+import game_controller
 
 class Pieces_Wall(Layer):
     def __init__(self):
@@ -18,19 +18,31 @@ class Pieces_Wall(Layer):
         
         self.same_line_blks = {0:[]}# vai armazenar lista de blocos com mesma altura ( para remover quando completar a linha)
 
+        self.game_controller = game_controller.game_controller
+        self.c_manager =  self.game_controller.c_manager# obtem instancia do gerenciador de colisao
+        
+
         self.schedule_interval(self.check_line, 0.5) # checa se completou uma linha de blocos a cada 500ms
 
-    def add_to_wall(self, blocks):
-        try:
-            for block in blocks:
-                if(type(block) == Block):
-                    self.add(block)
-                    self.same_line_blks[round(block.y, 0)].append(block)
-        except:
-            print("Error! Pieces_Wall add_to_wall")
+    def add_to_wall(self, block):
+        if(type(block) == Block):
+            try:
+                block.b_type = "Base_Block" # altera o tipo do bloco, agora faz parte da base
+                self.add(block)
+                self.same_line_blks[round(block.y, 0)].append(block)
+                
+            except KeyError:# se obteve erro cria uma array e adiciona novamente
+                self.same_line_blks[round(block.y, 0)] = []
+                self.same_line_blks[round(block.y, 0)].append(block)
+            finally:
+                self.c_manager.add(block) # adiciona bloco ao gerenciador de colisoes
+
 
     def check_line(self, time_elapsed):
         try:
+            if(len(self.children) <= 0):
+                return
+
             removed_pos_y = 0
             count = 0 # contagem de linhas ja movidas
             for (key, value) in self.same_line_blks.items():

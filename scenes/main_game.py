@@ -8,6 +8,7 @@ from sprites.block import Block
 from layers.keyboard_input import Keyboard_Input
 from layers.wall_limits import Wall_Limits
 from layers.game_info import Game_Info
+from layers.pieces_wall import Pieces_Wall
 from sprites.piece import Piece
 import game_controller
 
@@ -19,9 +20,9 @@ class Main_Game(Scene):
     def __init__(self):
         Scene.__init__(self)
         self.anchor = (0,0)
-        self.is_coliding_left = False
-        self.is_coliding_right = False
-        self.is_coliding_base = False
+        self.is_colliding_left = False
+        self.is_colliding_right = False
+        self.is_colliding_base = False
 
         self.game_controller = game_controller.game_controller
         self.c_manager =  self.game_controller.c_manager# obtem instancia do gerenciador de colisao
@@ -33,31 +34,83 @@ class Main_Game(Scene):
         keybd_input.on_key_press = self.on_key_press 
         keybd_input.on_key_release = self.on_key_release 
         self.add(Keyboard_Input()) # adiciona layer para obter imput do teclado
-                
-        self.schedule(self.check_collision) # checa colisao a cada 400ms
+
+        self.pieces_wall = Pieces_Wall()
+        self.add( self.pieces_wall )# adiciona a a layer para armazenas todas a pecas caidas
+
+        self.schedule(self.check_collision) # checa colisao a cada frame
 
     def start(self):
         self.currentScore = 0
-        self.info_layer = Game_Info()
-        self.add(self.info_layer)# adiciona layer de visualizacao de peca a cena
+        self.game_info_layer = Game_Info()
+        self.add(self.game_info_layer)# adiciona layer de visualizacao de peca a cena
 
         self.add_new_piece()
         
 
     def add_new_piece(self):
-        self.currPiece = self.info_layer.get_next_piece() # obtem peca inicial(a primeira proxima peca...)
+        self.currPiece = self.game_info_layer.get_next_piece() # obtem peca inicial(a primeira proxima peca...)
         self.currPiece.position = POS_NEW_PIECE
-        self.add(self.currPiece)# adiciona peca a cena
+        self.pieces_wall.add(self.currPiece)# adiciona peca na layer de pecas e blocos 
 
         self.currPiece.start_fall()
         for (_, block) in self.currPiece.children:# adiciona peca atual ao gerenciador de colisao
             self.c_manager.add(block)
 
+    def process_piece(self, piece):
+        for _ in range(0, len(piece.children)):
+            child = piece.children[0][1]
+            piece.remove(child)
+            child.position = ( piece.position[0]+ child.position[0], piece.position[1]+child.position[1])
+            child.position = piece.point_to_world(child.position)
+            
+            #child.transform_matrix = piece.get_local_transform()
+            self.pieces_wall.add_to_wall(child)
+        piece.kill()
+
+
+    def sum_score(self, amount): # soma no score a quantidade passada
+        #TODO
+
+    def check_collision(self, time_elapsed):#todo frame checa se a peca possui colisao
+        try:
+            self.is_colliding_left = False
+            self.is_colliding_right = False
+            self.is_colliding_base = False
+            for (_,block) in self.currPiece.children:
+                for (obj, dist) in self.c_manager.ranked_objs_near(block, 5): # retorna lista com objetos que estao com na distancia passada
+                    if(not obj.b_type == "Piece"):
+                        #print("colission - ", obj.b_type, dist)
+                        if(not self.is_colliding_right and obj.b_type == 'Right_Wall'):#colisoes na direita da parede
+                            self.is_colliding_right = True
+                            
+                        if(not self.is_colliding_left and obj.b_type == 'Left_Wall'):#colisoes na esquerda da parede
+                            self.is_colliding_left = True
+
+                        if(not self.is_colliding_base and obj.b_type == 'Base_Floor'):#colisoes no chao
+                            self.is_colliding_base = True
+                            block.parent.stop_fall()
+
+                        if(not self.is_colliding_base and obj.b_type == 'Base_Block'):#colisoes na parte base dos blocos
+                            if(block.cshape.touches_point(obj.x-25, obj.y)):#colisoes na direita da peca
+                                self.is_colliding_right = True
+                            if(block.cshape.touches_point(obj.x+25, obj.y)):#colisoes na esquerda da peca
+                                self.is_colliding_left = True
+                            
+                            if(block.cshape.touches_point(obj.x, obj.y+25)):
+                                self.is_colliding_base = True
+                                block.parent.stop_fall()
+
+
+        except AttributeError as e:
+            print("Error! Main_Game check_collision - "+ e)
+
+
+    ''' KEYS INPUT '''
 
     def time_delay(self, time_elapsed, key_string):# executado depois de um certo delay
         self.unschedule(self.time_delay)
         self.schedule_interval(self.key_action, 0.1, key_string)# move a peca a cada 100ms enquanto a tecla ainda estiver pressionada
-
 
     def on_key_press(self, key, modifiers):
         key_string = symbol_string(key)# obtem o valor em string da tecla pressionada 
@@ -72,31 +125,11 @@ class Main_Game(Scene):
     def key_action(self, time_elapsed, key_string):
         if( key_string == 'UP'):
             self.currPiece.move((0,25))
-        if(not self.is_coliding_base and key_string == 'DOWN'):
+        if(not self.is_colliding_base and key_string == 'DOWN'):
             self.currPiece.move((0,-25))
-        if(not self.is_coliding_left and key_string == 'LEFT'):
+        if(not self.is_colliding_left and key_string == 'LEFT'):
             self.currPiece.move((-25,0))
-        if(not self.is_coliding_right and key_string == 'RIGHT'):
+        if(not self.is_colliding_right and key_string == 'RIGHT'):
             self.currPiece.move((25,0))
         if(key_string == 'SPACE'):
             self.currPiece.rotate()
-
-
-    def check_collision(self, time_elapsed):
-        
-        self.is_coliding_left = False
-        self.is_coliding_right = False
-        self.is_coliding_base = False
-        for (_,block) in self.currPiece.children:
-            for (obj, dist) in self.c_manager.objs_near_wdistance(block, 25):
-                if(not obj.b_type == "Piece"):
-                    print("colission - ", obj.b_type, dist)
-                    if( obj.b_type == 'RightWall'):
-                        self.is_coliding_right = True
-                    if(obj.b_type == 'LeftWall'):
-                        self.is_coliding_left = True
-                    if(obj.b_type == 'Base'):
-                        self.is_coliding_base = True
-                        block.parent.stop_fall()
-
-        

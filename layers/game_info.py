@@ -5,6 +5,7 @@ import pyglet
 from sprites.piece import Piece
 from sprites.piece import piece_types
 from cocos.layer import Layer
+from cocos.text import Label
 from cocos.sprite import Sprite
 
 def sort_new_piece():
@@ -25,9 +26,16 @@ class Game_Info(Layer):
         
         self.position = (0,0)## posicao fixa da layer
         self.anchor = (0,0)
+
+        self.score_label = Label("0",position=(880,350),font_name = "Ravie", align = "center",anchor_x = "center")# texto onde mostra o score atual
+        self.add(self.score_label)
+
+        self.time_label = Label("00:00",position=(880,250),font_name = "Ravie", align = "center",anchor_x = "center")# texto onde mostra o score atual
+        self.add(self.time_label )
         
         self.next_piece = Piece(POS_NX_PIECE, sort_new_piece())
         self.add(self.next_piece)
+        self.update_time(122)
 
     def get_next_piece(self):
         piece = self.next_piece
@@ -36,4 +44,15 @@ class Game_Info(Layer):
         self.add(self.next_piece)
         return piece
 
+    def update_score(self, score):# atualiza o label mostrando o score
+        try:
+            self.score_label.element.text = str(score)
+        except:
+            self.score_label.element.text = "0"
     
+    def update_time(self, secs):# atualiza o label mostrando o tempo
+        try:
+            date = time.localtime(secs)
+            self.time_label.element.text = (date.tm_min < 10 and "0"+str( date.tm_min) or str( date.tm_min)) +":"+ (date.tm_sec < 10 and "0"+ str(date.tm_sec) or str(date.tm_sec))
+        except:
+            self.time_label.element.text = "00:00"
