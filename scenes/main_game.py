@@ -15,6 +15,7 @@ from layers.pieces_wall import Pieces_Wall
 from layers.ranking import Ranking
 from sprites.piece import Piece
 import game_controller
+import time
 
 POS_NEW_PIECE = (424, 562.5)# define posicao da nova peca
 
@@ -75,6 +76,15 @@ class Main_Game(Scene):
         pass
 
     def count_time(self, time_elapsed):# metodo chamado com o tempo que passou, entao guarda e atualiza na layer o tempo atual do jogo
+        a = 0
+        hours = 0
+        while a < 1:
+            for seconds in range(0,9999999):
+                    time.sleep(1)
+                    print(seconds)
+        hours = hours + 1
+
+
         #TODO
         pass
 
