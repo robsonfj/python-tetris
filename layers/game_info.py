@@ -7,9 +7,11 @@ from cocos.text import Label
 from cocos.sprite import Sprite
 from cocos.actions import CallFunc
 
-
 POS_NX_PIECE = (874, 500)# define posicao fixa da proxima peca
 
+'''
+Classe filha de Layer armazena e atualiza as informacoes de jogo como proxima peca, score_label, time_label
+'''
 class Game_Info(Layer):
     def __init__(self):
         Layer.__init__(self)

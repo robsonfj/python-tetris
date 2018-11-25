@@ -7,6 +7,7 @@ from cocos.director import director
 from cocos.sprite import Sprite
 from cocos.text import Label
 import game_controller
+from layers.ranking import Ranking
 
 
 class Menu(Scene) :
@@ -23,7 +24,7 @@ class Menu(Scene) :
         
         menu_items = [
             MenuItem('Start Game', game_controller.game_controller.init_new_game),
-            MenuItem('Ranking', None ),
+            MenuItem('Ranking', self.show_ranking ),
             MenuItem('Options', None ),
             MenuItem('Quit', game_controller.game_controller.close_scene )
         ]
@@ -33,7 +34,9 @@ class Menu(Scene) :
         layer.add(menu)
         self.add(layer)
         
-    
+    def show_ranking(self):
+        self.add(Ranking())
+
     def on_enter(self):
         director.push_handlers(self.on_cocos_resize)
         super(Menu, self).on_enter()

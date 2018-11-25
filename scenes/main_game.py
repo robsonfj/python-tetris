@@ -12,6 +12,7 @@ from layers.keyboard_input import Keyboard_Input
 from layers.wall_limits import Wall_Limits
 from layers.game_info import Game_Info
 from layers.pieces_wall import Pieces_Wall
+from layers.ranking import Ranking
 from sprites.piece import Piece
 import game_controller
 
@@ -57,7 +58,7 @@ class Main_Game(Scene):
     def game_over(self):
         self.c_manager.clear()# limpa lista de objetos com colisao
         self.unschedule(self.count_time)
-        #self.add(Ranking())
+        self.add(Ranking())
 
     def add_next_piece(self):
         self.currPiece = self.game_info_layer.obtain_next_piece() # obtem peca inicial(a primeira proxima peca...)
