@@ -3,6 +3,8 @@ from pyglet.window.key import symbol_string
 from cocos.layer import Layer
 from cocos.text import Label
 from cocos.scene import Scene
+from cocos.actions import MoveBy
+from cocos.actions import RotateBy
 from cocos.collision_model import CollisionManagerGrid
 from sprites.block import Block
 from layers.keyboard_input import Keyboard_Input
@@ -61,8 +63,11 @@ class Main_Game(Scene):
         for _ in range(0, len(piece.children)):
             child = piece.children[0][1]
             piece.remove(child)
-            child.position = ( piece.position[0]+ child.position[0], piece.position[1]+child.position[1])
+            child.anchor = (0,0)
             child.position = piece.point_to_world(child.position)
+            self.transform_anchor = piece.position
+            action = RotateBy(piece.rotation,0)
+            child.do(action)
             
             #child.transform_matrix = piece.get_local_transform()
             self.pieces_wall.add_to_wall(child)

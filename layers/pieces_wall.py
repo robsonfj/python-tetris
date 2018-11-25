@@ -29,23 +29,21 @@ class Pieces_Wall(Layer):
             try:
                 block.b_type = "Base_Block" # altera o tipo do bloco, agora faz parte da base
                 self.add(block)
-                self.same_line_blks[round(block.y, 0)].append(block)
+                self.same_line_blks[block.y].append(block)
                 
             except KeyError:# se obteve erro cria uma array e adiciona novamente
-                self.same_line_blks[round(block.y, 0)] = []
-                self.same_line_blks[round(block.y, 0)].append(block)
+                self.same_line_blks[block.y] = []
+                self.same_line_blks[block.y].append(block)
             finally:
                 self.c_manager.add(block) # adiciona bloco ao gerenciador de colisoes
 
 
     def check_line(self, time_elapsed):
         try:
-            if(len(self.children) <= 0):
-                return
-
             removed_pos_y = 0
             count = 0 # contagem de linhas ja movidas
             for (key, value) in self.same_line_blks.items():
+                
                 if(len(value) >= 16):# se a quantidade de blocos em uma linha for 16 ou maior elimina a linha e abaixa as pecas superiores
                     for block in value:
                         block.kill()
@@ -56,6 +54,6 @@ class Pieces_Wall(Layer):
                         block.y -= 25 # mover uma linha para baixo
                     count += 1
 
-        except:
-            print("Error! Pieces_Wall check_line")
+        except AttributeError as e:
+            print("Error! Pieces_Wall check_line - ",e)
     

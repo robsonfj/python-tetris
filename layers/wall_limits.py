@@ -22,11 +22,10 @@ class Wall_Rect():
 class Wall_Limits(Layer):
     def __init__(self):
         Layer.__init__(self)
-
-        self.add(Sprite(image=pyglet.resource.image('game_background.jpg') , position=(self.anchor_x,self.anchor_y)))# Background Image
+        self.anchor = (0,0)
+        self.add(Sprite(image=pyglet.resource.image('game_background.jpg'), anchor=self.anchor))# Background Image
 
         
-
         self.game_controller = game_controller.game_controller
         self.c_manager =  self.game_controller.c_manager# obtem instancia do gerenciador de colisao
 

@@ -76,8 +76,8 @@ class Piece(Sprite):
                 self.gm_ctl.main_game.add_new_piece()
                 self.gm_ctl.main_game.process_piece(self)
                 
-        except AttributeError:
-            print("Error! Piece stop_fall")
+        except AttributeError as e:
+            print("Error! Piece stop_fall -", e)
         
     
     def move(self, amount):
@@ -92,8 +92,9 @@ class Piece(Sprite):
 
     def update_blocks(self):
         count = 0
+        
         for (_,block) in self.children :
-            offset = piece_types[self.p_type][count]
-            block.set_cshape_center( getPosition(offset, self.position)) # realinha o centro do retangulo de colisao
+            rel_pos = self.point_to_world(block.position)
+            block.set_cshape_center( rel_pos) # reposiciona o retangulo de colisao para refletir a posicao real da peca
             count += 1
 
