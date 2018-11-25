@@ -84,7 +84,7 @@ class Main_Game(Scene):
             self.is_colliding_right = False
             self.is_colliding_base = False
             for (_,block) in self.currPiece.children:
-                for (obj, dist) in self.c_manager.ranked_objs_near(block, 5): # retorna lista com objetos que estao com na distancia passada
+                for (obj, _) in self.c_manager.ranked_objs_near(block, 5): # retorna lista com objetos que estao com na distancia passada
                     if(not obj.b_type == "Piece"):
                         #print("colission - ", obj.b_type, dist)
                         if(not self.is_colliding_right and obj.b_type == 'Right_Wall'):#colisoes na direita da parede
@@ -142,7 +142,7 @@ class Main_Game(Scene):
         self.unschedule(self.key_action)
         self.unschedule(self.time_delay)
         
-    def key_action(self, time_elapsed, key_string):
+    def key_action(self, time_elapsed, key_string):# para cada tecla executa a acao especifica
         if( key_string == 'UP'):
             self.unschedule(self.currPiece.do_fall)
             self.schedule_interval(self.currPiece.do_fall, 1)
