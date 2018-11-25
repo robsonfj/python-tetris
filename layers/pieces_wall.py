@@ -16,7 +16,7 @@ class Pieces_Wall(Layer):
         self.position = (0,0)# posicao fixa da layer
         self.anchor = (0,0)
         
-        self.same_line_blks = {0:[]}# vai armazenar lista de blocos com mesma altura ( para remover quando completar a linha)
+        self.same_line_blks = {}# vai armazenar lista de blocos com mesma altura ( para remover quando completar a linha)
 
         self.game_controller = game_controller.game_controller
         self.c_manager =  self.game_controller.c_manager# obtem instancia do gerenciador de colisao
@@ -37,23 +37,37 @@ class Pieces_Wall(Layer):
             finally:
                 self.c_manager.add(block) # adiciona bloco ao gerenciador de colisoes
 
+    def process_piece(self, piece):
+        for _ in range(0, len(piece.children)):
+            child = piece.children[0][1]
+            piece.remove(child)
+            child.anchor = (0,0)
+            child.position = piece.point_to_world(child.position)
+            self.add_to_wall(child)
+        piece.kill()
 
     def check_line(self, time_elapsed):
         try:
-            removed_pos_y = 0
-            count = 0 # contagem de linhas ja movidas
+            removed_lines = []
             for (key, value) in self.same_line_blks.items():
-                
                 if(len(value) >= 16):# se a quantidade de blocos em uma linha for 16 ou maior elimina a linha e abaixa as pecas superiores
                     for block in value:
                         block.kill()
-                    removed_pos_y = key
-                if(not removed_pos_y == 0 and key > removed_pos_y):
-                    self.same_line_blks[removed_pos_y + (25*count)] = self.same_line_blks[key]
-                    for block in value:
-                        block.y -= 25 # mover uma linha para baixo
-                    count += 1
+                        self.c_manager.remove_tricky(block)
+                    removed_lines.append(key)
 
-        except AttributeError as e:
+            for value in removed_lines:# para as linhas de blocos acima, mover uma linha para baixo
+                self.parent.sum_score(375)# adiciona o score de uma linha
+                lines = self.same_line_blks.keys()
+                for line in lines:
+                    if(line > value):
+                        self.same_line_blks[line-25] = self.same_line_blks[line]
+                        for block in self.same_line_blks[line-25]:
+                            block.y -= 25 # mover uma linha para baixo
+
+                self.same_line_blks.pop(max(lines))# ultima linha agora ficou duplicada, entao remove a ultima linha da lista
+                    
+
+        except Exception as e:
             print("Error! Pieces_Wall check_line - ",e)
     

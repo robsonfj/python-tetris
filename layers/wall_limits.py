@@ -31,10 +31,10 @@ class Wall_Limits(Layer):
 
         scale = 0.4
         tmp_block = Block((0,0), '', scale=scale)# para obter as dimencoes da imagem do bloco
-        init_pos_x = 224 # meio eixo x da tela
+        init_pos_x = 225 # meio eixo x da tela
         init_pos_y = tmp_block.height+tmp_block.height/2
         
-        for i in range(23):
+        for i in range(22):
             blk = Block((init_pos_x, init_pos_y+ (i*tmp_block.height)), block_color='gray', scale=scale, b_type="Left_Wall")
             self.add(blk)
 

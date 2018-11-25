@@ -22,7 +22,7 @@ class Game_Controller:
     def run(self):
         director.run(Menu())
     
-    def close_game(self):
+    def close_scene(self):
         director.pop()
 
     def init_new_game(self):
@@ -31,10 +31,6 @@ class Game_Controller:
         
         self.main_game.start()
 
-
-    def game_over(self):
-        self.c_manager.clear()# limpa lista de objetos com colisao
-       
 
     def on_key_press(self, key, modifiers):
         self.main_game.on_key_press(key, modifiers)

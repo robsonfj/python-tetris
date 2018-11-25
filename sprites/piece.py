@@ -1,4 +1,6 @@
 import pyglet
+import random
+import time
 from cocos.layer import Layer
 from cocos.sprite import Sprite
 from cocos.actions import MoveBy
@@ -11,6 +13,17 @@ def getPosition(offset, initPos = (0,0)):
         return (initPos[0] + offset[0], initPos[1] + offset[1])
     except:
         return initPos
+
+def sort_new_piece():# sorteia uma peca nova randomicamente
+        count = 1
+        chosen = round(random.uniform(1, len(piece_types.keys())), 0)
+        time.sleep(random.uniform(0,1))
+        random.seed(time.time())
+        for key, _ in piece_types.items():
+            if(count >= chosen):
+                return key
+            count += 1
+        return "square"
 
 piece_types = {
     "S"          :[ (0,0), (-25, 0), ( 0,25),  (25,25) ],
@@ -32,21 +45,20 @@ piece_colors = {
 }
 
 class Piece(Sprite):
-    def __init__(self, position, p_type):
+    def __init__(self, position, p_type=None):
         Sprite.__init__(self, pyglet.resource.image("white.png"), opacity=0)
+        self.position = position
+        self.anchor = (0,0)
+
         try:
-            self.p_type = p_type
+            self.p_type = p_type == None and sort_new_piece() or p_type
             blocks_offsets = piece_types[self.p_type] # De acordo com o tipo retorna lista com ofsets dos blocos para formar a peca
         except KeyError:
             self.p_type = "Square" # peca padrao caso valor passado seja incorreto
             blocks_offsets = piece_types[self.p_type]
         
-        self.is_stopped = True # Booleano para checar se a peca tem que parar de cair
-        self.position = position
-        self.anchor = (0,0)
+        self.is_stopped = True # Booleano para checar se a peca ja parou de cair
         
-        self.gm_ctl = game_controller.game_controller
-
         # Inicializa os blocos nas posicoes obtidas do dicionario de pecas
         for offset in blocks_offsets:
             blk_pos = getPosition(offset)
@@ -56,26 +68,19 @@ class Piece(Sprite):
 
     def start_fall(self):
         self.is_stopped = False # Quando colidir com um bloco base tem que ser True
-        self.schedule_interval(self.do_fall, 1)
+        self.schedule_interval(self.do_fall, 0.8)
 
-    def do_fall(self, time_elapsed):
-        #print("x-",self.x)
-        #print("y-",self.y)
-        
+    def do_fall(self, time_elapsed):        
         action = MoveBy((0,-25),0)
         self.do(action)
         self.update_blocks()
 
-    def stop_fall(self):
+    def stop_fall(self):# retira do processamento a acao de cair
         try:
+            self.unschedule(self.do_fall)
             if(not self.is_stopped):
-                self.unschedule(self.do_fall)
                 self.is_stopped = True
 
-                self.gm_ctl.main_game.sum_score(25)
-                self.gm_ctl.main_game.add_new_piece()
-                self.gm_ctl.main_game.process_piece(self)
-                
         except AttributeError as e:
             print("Error! Piece stop_fall -", e)
         

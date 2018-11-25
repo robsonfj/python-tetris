@@ -25,7 +25,7 @@ class Menu(Scene) :
             MenuItem('Start Game', game_controller.game_controller.init_new_game),
             MenuItem('Ranking', None ),
             MenuItem('Options', None ),
-            MenuItem('Quit', game_controller.game_controller.close_game )
+            MenuItem('Quit', game_controller.game_controller.close_scene )
         ]
 
         menu.create_menu( menu_items )
