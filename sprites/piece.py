@@ -5,6 +5,7 @@ from cocos.layer import Layer
 from cocos.sprite import Sprite
 from cocos.actions import MoveBy
 from cocos.actions import RotateBy
+#local libs
 from sprites.block import Block
 import game_controller
 
@@ -16,11 +17,10 @@ def getPosition(offset, initPos = (0,0)):
 
 def sort_new_piece():# sorteia uma peca nova randomicamente
         count = 1
-        chosen = round(random.uniform(1, len(piece_types.keys())), 0)
-        time.sleep(random.uniform(0,1))
-        random.seed(time.time())
+        chosen = random.uniform(1,7)
+        random.seed(time.time()+chosen)
         for key, _ in piece_types.items():
-            if(count >= chosen):
+            if(count >= round(chosen,0)):
                 return key
             count += 1
         return "square"

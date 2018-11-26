@@ -5,8 +5,9 @@ from cocos.director import director
 from cocos.scene import Scene
 from cocos.collision_model import CollisionManagerGrid
 from cocos.text import Label
+#local libs
 from scenes.main_game import Main_Game
-from scenes.menu import Menu
+from scenes.start_screen import Start_Screen
 
 class Game_Controller:
     def __init__(self):
@@ -20,7 +21,7 @@ class Game_Controller:
         self.c_manager = CollisionManagerGrid(0,wind_width, 0, wind_height, 25, 25)# inicializa gerenciador de colisao
         
     def run(self):
-        director.run(Menu())
+        director.run(Start_Screen())
     
     def close_scene(self):
         director.pop()
@@ -31,12 +32,20 @@ class Game_Controller:
         
         self.main_game.start()
 
+    def pause_game(self):
+        pass
+
+    def unpause_game(self):
+        pass
+
 
     def on_key_press(self, key, modifiers):
-        self.main_game.on_key_press(key, modifiers)
+        if(self.main_game):
+            self.main_game.on_key_press(key, modifiers)
 
     def on_key_release(self, key, modifiers):
-        self.main_game.on_key_release(key, modifiers)
+        if(self.main_game):
+            self.main_game.on_key_release(key, modifiers)
         
 
 game_controller = Game_Controller()

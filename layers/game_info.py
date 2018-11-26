@@ -1,11 +1,12 @@
 
 import time
-from sprites.piece import Piece
-from sprites.piece import piece_types
 from cocos.layer import Layer
 from cocos.text import Label
 from cocos.sprite import Sprite
 from cocos.actions import CallFunc
+#local libs
+from sprites.piece import Piece
+from sprites.piece import piece_types
 
 POS_NX_PIECE = (874, 500)# define posicao fixa da proxima peca
 
@@ -26,13 +27,18 @@ class Game_Info(Layer):
         self.add(self.time_label )
         
         self.next_piece = Piece(POS_NX_PIECE)
-        self.add(self.next_piece)
 
-    def obtain_next_piece(self): # obtem proxima peca armazenada e programa para obter uma nova peca
-        piece = self.next_piece
-        self.remove(self.next_piece)
-        self.schedule(self.new_next_piece)
-        return piece
+    def obtain_next_piece(self): # obtem proxima peca armazenada(se nao tiver uma cria) e programa para obter uma nova peca
+        try:
+            piece = self.next_piece == None and self.new_next_piece(0) or self.next_piece
+            if(self.next_piece in self.children):
+                self.remove(self.next_piece)
+            self.next_piece = None
+            self.schedule(self.new_next_piece)
+            return piece 
+        except Exception as e:
+            print("Error! Game_Info obtain_next_piece", e)
+        
 
     def new_next_piece(self, elapsed): # obtem proxima peca e armazena
         self.unschedule(self.new_next_piece)
@@ -44,6 +50,9 @@ class Game_Info(Layer):
             self.score_label.element.text = str(score)
         except:
             self.score_label.element.text = "0"
+
+    def get_time_str(self):# obtem o tempo do relogio em string
+        return self.time_label.element.text
     
     def update_time(self, secs):# atualiza o label mostrando o tempo
         try:
