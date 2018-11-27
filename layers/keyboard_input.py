@@ -11,7 +11,6 @@ class Keyboard_Input(Layer):
     def on_key_press(self, key, modifiers):
         game_controller.game_controller.on_key_press(key, modifiers)
         
-
     def on_key_release(self, key, modifiers):
         game_controller.game_controller.on_key_release(key, modifiers)
         
