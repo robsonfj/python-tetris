@@ -5,6 +5,7 @@ from cocos.layer import Layer
 from cocos.sprite import Sprite
 from cocos.actions import MoveBy
 from cocos.actions import RotateBy
+from cocos.euclid import Vector2
 #local libs
 from sprites.block import Block
 import game_controller
@@ -49,7 +50,8 @@ class Piece(Sprite):
         Sprite.__init__(self, pyglet.resource.image("white.png"), opacity=0)
         self.position = position
         self.anchor = (0,0)
-
+        
+        
         try:
             self.p_type = p_type == None and sort_new_piece() or p_type
             blocks_offsets = piece_types[self.p_type] # De acordo com o tipo retorna lista com ofsets dos blocos para formar a peca
@@ -62,17 +64,21 @@ class Piece(Sprite):
         # Inicializa os blocos nas posicoes obtidas do dicionario de pecas
         for offset in blocks_offsets:
             blk_pos = getPosition(offset)
-            block = Block(blk_pos, block_color= piece_colors[self.p_type], b_type='Piece', scale=0.4)
+            block = Block(blk_pos, block_color= piece_colors[self.p_type], b_type='Piece')
             self.add(block)
-            block.set_cshape_center(getPosition(offset, self.position)) # realinha o centro do retangulo de colisao
+            pos = getPosition(offset, self.position)
+            block.update_cshape_center(Vector2(pos[0], pos[1])) # realinha o centro do retangulo de colisao
 
     def start_fall(self):
         self.is_stopped = False # Quando colidir com um bloco base tem que ser True
         self.schedule_interval(self.do_fall, 0.8)
 
-    def do_fall(self, time_elapsed):        
-        action = MoveBy((0,-25),0)
-        self.do(action)
+    def do_fall(self, time_elapsed): 
+        main_game = game_controller.game_controller.main_game
+        main_game.check_collision()
+        if(not main_game.is_colliding_base):      
+            action = MoveBy((0,-25),0)
+            self.do(action)
         self.update_blocks()
 
     def stop_fall(self):# retira do processamento a acao de cair
@@ -96,10 +102,13 @@ class Piece(Sprite):
         self.update_blocks()
 
     def update_blocks(self):
+        if(len(self.children) <= 0):
+            return
+
         count = 0
-        
-        for (_,block) in self.children :
-            rel_pos = self.point_to_world(block.position)
-            block.set_cshape_center( rel_pos) # reposiciona o retangulo de colisao para refletir a posicao real da peca
+        for offset in piece_types[self.p_type]:
+            pos = getPosition(offset, self.position)
+            self.children[count][1].update_cshape_center(Vector2(pos[0], pos[1]))# reposiciona o retangulo de colisao para refletir a posicao real da peca
             count += 1
+            
 

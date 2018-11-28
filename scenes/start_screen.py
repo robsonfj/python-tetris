@@ -18,7 +18,7 @@ import game_controller
 class Start_Screen(Scene) :
     def __init__(self):
         Scene.__init__(self)
-        self.add(Sprite(image=pyglet.resource.image('background.png') , position=(self.anchor_x,self.anchor_y), scale=0.4))# Background Image
+        self.add(Sprite(image=pyglet.resource.image('background.png') , position=(self.anchor_x,self.anchor_y)))# Background Image
         
         black_fade = ColorLayer(0, 0, 0, 0)
         black_fade.opacity = 120

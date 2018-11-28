@@ -40,11 +40,8 @@ class Main_Game(Scene):
         self.currentScore = 0        
         self.game_time = 0
 
-        self.schedule_interval(self.count_time, 1)#inicia timer para contagem do tempo
-
         self.c_manager =  game_controller.game_controller.c_manager# obtem instancia do gerenciador de colisao
-        self.schedule(self.check_collision) # checa colisao a cada frame
-
+        
         self.keybd_input = Keyboard_Input()# iniciaiza o layer de input do teclado
         self.wall_limits = Wall_Limits()# iniciaiza o layer para as delimitacoes do jogo
         self.pieces_wall = Pieces_Wall()# iniciaiza o layer de bloco de pecas
@@ -61,6 +58,9 @@ class Main_Game(Scene):
 
 
         self.add_next_piece()# inicializa a primeira peca
+
+        #self.schedule(self.check_collision) # checa colisao a cada frame
+        self.schedule_interval(self.count_time, 1)#inicia timer para contagem do tempo
 
 
     def game_over(self):
@@ -90,13 +90,17 @@ class Main_Game(Scene):
         self.game_info_layer.update_time(self.game_time) 
 
 
-    def check_collision(self, time_elapsed):#todo frame checa se a peca possui colisao
+    def check_collision(self):#checa se a peca possui colisao
         try:
+            if(self.currPiece.is_stopped):
+                return
+                
             self.is_colliding_left = False
             self.is_colliding_right = False
             self.is_colliding_base = False
+            
             for (_,block) in self.currPiece.children:
-                for (obj, _) in self.c_manager.ranked_objs_near(block, 5): # retorna lista com objetos que estao com na distancia passada
+                for (obj, dist) in self.c_manager.ranked_objs_near(block, 15): # retorna lista com objetos que estao com na distancia passada
                     if(not obj.b_type == "Piece"):
                         if(not self.is_colliding_right and obj.b_type == 'Right_Wall'):#colisoes na direita da parede
                             self.is_colliding_right = True
@@ -109,12 +113,12 @@ class Main_Game(Scene):
                             self.piece_must_stop(block.parent)
 
                         if(obj.b_type == 'Base_Block'):#colisoes na parte base dos blocos
-                            if(not self.is_colliding_right and  block.cshape.touches_point(obj.x-25, obj.y)):#colisoes na direita da peca
+                            if(not self.is_colliding_right and  block.cshape.touches_point(obj.x-dist, obj.y)):#colisoes na direita da peca
                                 self.is_colliding_right = True
-                            if(not self.is_colliding_left and  block.cshape.touches_point(obj.x+25, obj.y)):#colisoes na esquerda da peca
+                            if(not self.is_colliding_left and  block.cshape.touches_point(obj.x+dist, obj.y)):#colisoes na esquerda da peca
                                 self.is_colliding_left = True
                             
-                            if(not self.is_colliding_base and block.cshape.touches_point(obj.x, obj.y+25)):
+                            if(not self.is_colliding_base and block.cshape.touches_point(obj.x, obj.y+dist)):
                                 self.is_colliding_base = True
                                 self.piece_must_stop(block.parent)
                                 
@@ -153,18 +157,21 @@ class Main_Game(Scene):
         self.unschedule(self.time_delay)
         
     def key_action(self, time_elapsed, key_string):# para cada tecla executa a acao especifica
+
+        self.check_collision()
+
         if( key_string == 'UP'):#TODO REMOVE
             self.unschedule(self.currPiece.do_fall)
             self.schedule_interval(self.currPiece.do_fall, 1)
 
-        if(not self.is_colliding_base and key_string == 'DOWN'):
+        if(not self.is_colliding_right and key_string == 'DOWN'):
             self.unschedule(self.currPiece.do_fall)
             self.schedule_interval(self.currPiece.do_fall, 0.03)
 
         if(not self.is_colliding_left and key_string == 'LEFT'):
             self.currPiece.move((-25,0))
 
-        if(not self.is_colliding_right and key_string == 'RIGHT'):
+        if(not self.is_colliding_base and key_string == 'RIGHT'):
             self.currPiece.move((25,0))
 
         if(key_string == 'SPACE'):

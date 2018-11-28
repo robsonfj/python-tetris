@@ -13,8 +13,8 @@ class Game_Controller:
     def __init__(self):
         pyglet.resource.path = ['assets', 'assets/blocks'] # caminho para imagens e sprites
         pyglet.resource.reindex()
-        pyglet.font.add_file('./assets/tetrominoes.ttf')# inicializa fonte
         
+        pyglet.font.add_file('./assets/tetrominoes.ttf')# inicializa fonte
         
     def init( self,wind_width=800, wind_height=600):
         director.init(width=wind_width, height=wind_height, caption="TETRIS", fullscreen=False, resizable=False)

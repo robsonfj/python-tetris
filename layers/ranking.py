@@ -1,5 +1,6 @@
 import cocos
 import pyglet
+from pyglet.window import key
 from cocos.director import director
 from cocos.layer import Layer
 from cocos.text import Label
@@ -41,8 +42,7 @@ class Ranking(Layer):
             black_lyr.height = int(director.window.height)
             black_lyr.position = (0, 0)
             black_lyr.opacity = 120
-            self.player_name = "Player"
-            input_item = EntryMenuItem('Nome:', self.on_text, "", 6)
+            input_item = EntryMenuItem('Insira o nome:', self.on_text, "", 6)
             menu_items.append(input_item)
             input_item.position = ( 0, -90)
 
@@ -53,16 +53,19 @@ class Ranking(Layer):
         menu.font_title["font_name"] = "Tetrominoes"
         menu.font_title["color"] = (214, 178, 152, 255)
         menu.font_item["font_name"] = "Ravie"
-        menu.font_item["font_size"] = 22
+        menu.font_item["font_size"] = 19
         menu.font_item_selected["font_name"] = "Ravie"
         menu.font_item_selected["font_size"] = 22
 
         
         menu.create_menu( menu_items )
         menu.on_quit = self.on_quit
+        
         self.add(menu)
 
-
+    def on_key_press(self, symbol, modifiers):
+        print(symbol ==  key.ENTER)
+        
     def save_rank(self):# salva a dicionario de ranks em arquivo
         str_data = ""
         for (score,data) in self.rank_dict.items():
@@ -73,15 +76,16 @@ class Ranking(Layer):
     def load_rank(self):# le a lista de strings obtidas do arquivo e preenche o dicionario com os rankings
         try:
             list_data = self.fs.readFile()
-            for data in list_data:
+            for data in list_data: 
                 splited = data.split("/")
                 tmp = splited[1].replace("(","")
                 tmp = tmp.replace(")","")
                 tmp = tmp.replace("\n","")
                 tmp = tmp.replace("'","")
+                tmp = tmp.replace(" ","")
                 splited[1]= tmp.split(",")
-                self.rank_dict[int(splited[0])] = (splited[1][0],splited[1][1])
-
+                self.rank_dict[int(splited[0])] = (splited[1][0],splited[1][1]) # depois de formatar corretamente insere o nome o tempo de jogo
+            self.reorder_rank()
         except Exception as e:
             print("Error! Ranking load_rank -",e)
 
@@ -118,7 +122,12 @@ class Ranking(Layer):
             if(count > 4):# sai depois de adicionar 5 dados no rank
                 break
 
+    def on_enter(self):
+        self.player_name = "Player"
+        #self.load_rank()
+
     def on_text(self, text):
+        text = text.replace(" ","")
         self.player_name = text
 
     def on_quit(self):# ao pressionar ESC executa este metodo
