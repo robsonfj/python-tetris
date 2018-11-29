@@ -37,12 +37,10 @@ def sort_new_piece():# sorteia uma peca nova randomicamente
         max_num = max(pieces_generated.values())
         count = 0
         for key in Pieces.keys():# remove pecas que ja foram mais usadas, para aumentar "randomicidade"
-            if(game_controller.last_generated == key or pieces_generated[key] >=  max_num-3 ):
+            if(game_controller.last_generated == key):
                 keys.remove(key)
-                count += 1
-            if(count >= 3):
                 break
-        
+
         random.shuffle(keys)
         chosen = random.choice(keys)
         random.seed(time.time())
