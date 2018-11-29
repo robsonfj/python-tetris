@@ -41,6 +41,16 @@ def getPosition(offset:Vector2, initPos = Vector2()):
 def sort_new_piece():# sorteia uma peca nova randomicamente
 
         keys = list(Pieces.keys())
+        max_num = max(pieces_generated.values())
+        count = 0
+        for key in Pieces.keys():# remove pecas que ja foram mais usadas, para aumentar "randomicidade"
+            if(pieces_generated[key] >=  max_num-3):
+                keys.remove(key)
+                pieces_generated[key] = pieces_generated[key] >= 10 and 0 or pieces_generated[key]
+                count += 1
+            if(count >= 2):
+                break
+
         random.shuffle(keys)
 
         count = 1

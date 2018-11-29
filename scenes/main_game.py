@@ -33,6 +33,7 @@ class Main_Game(Scene):
         Scene.__init__(self)
         self.anchor = Vector2()
 
+
     def start(self):
         #variaveis a serem resetadas com u jogo novo
         self.is_game_over = False
@@ -43,7 +44,7 @@ class Main_Game(Scene):
         self.game_time = 0
 
         self.c_manager =  game_controller.game_controller.c_manager# obtem instancia do gerenciador de colisao
-        
+
         self.keybd_input = Keyboard_Input()# iniciaiza o layer de input do teclado
         self.wall_limits = Wall_Limits()# iniciaiza o layer para as delimitacoes do jogo
         self.pieces_wall = Pieces_Wall()# iniciaiza o layer de bloco de pecas
@@ -53,13 +54,11 @@ class Main_Game(Scene):
         # iniciaiza o layer multiplo para alternar entre layer do input,mostrar o game over e pause
         self.multi_layer = MultiplexLayer(Layer(), self.game_over_lyr, self.pause_lyr)
 
-
         self.add(self.wall_limits)# adiciona layer
         self.add(self.game_info_layer)# adiciona layer
         self.add(self.pieces_wall)# adiciona a a layer
         self.add(self.keybd_input)# adiciona layer
         self.add(self.multi_layer)# adiciona layer
-
 
         self.add_next_piece()# inicializa a primeira peca
 
@@ -128,7 +127,14 @@ class Main_Game(Scene):
         if(self.is_game_over):
             game_controller.game_controller.close_scene()
 
+
+
     def on_exit(self):
+        self.remove(self.wall_limits)# adiciona layer
+        self.remove(self.game_info_layer)# adiciona layer
+        self.remove(self.pieces_wall)# adiciona a a layer
+        self.remove(self.keybd_input)# adiciona layer
+        self.remove(self.multi_layer)# adiciona layer
         self.c_manager.clear()# limpa lista de objetos com colisao
 
         if(self.is_game_over):# quando acontece um game over adiciona a pontuacao ao rank
@@ -139,11 +145,14 @@ class Main_Game(Scene):
 
         return super().on_exit()
 
+    def on_enter(self):
+        self.start()
+        return super().on_enter()
 
     ''' KEYS INPUT '''
     def key_action(self, time_elapsed, key_string):# para cada tecla executa a acao especifica
         
-        if(key_string ==  'P'):
+        if(key_string ==  'P' or key_string ==  'ESCAPE'):
             self.on_pause()
 
         if(not self.is_colliding_base and key_string == 'DOWN'):

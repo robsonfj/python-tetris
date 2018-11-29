@@ -19,10 +19,10 @@ class Game_Controller:
         
     def init( self,wind_width=800, wind_height=600):
         director.init(width=wind_width, height=wind_height, caption="TETRIS", fullscreen=False, resizable=False)
-        pos = Vector2()
-        self.c_manager = CollisionManagerGrid(pos.x,wind_width, pos.y, wind_height, 25, 25)# inicializa gerenciador de colisao
+        self.c_manager = CollisionManagerGrid(0,wind_width, 0, wind_height, 25, 25)# inicializa gerenciador de colisao
         
     def run(self):
+        
         director.run(Start_Screen())
     
     def close_scene(self):
@@ -31,8 +31,6 @@ class Game_Controller:
     def init_new_game(self):
         self.main_game = Main_Game()# cria cena do jogo principal
         director.push(self.main_game)
-        
-        self.main_game.start()
 
     def on_key_press(self, key, modifiers):
         if(self.main_game):

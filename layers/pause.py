@@ -14,7 +14,6 @@ import game_controller
 Pause uma layer para lidar com o stado pausado do jogo
 '''
 class Pause(Layer):
-    is_event_handler = True
     def __init__(self):
         Layer.__init__(self)
 
@@ -26,12 +25,12 @@ class Pause(Layer):
         black_lyr.width = int(director.window.width)
         black_lyr.height = int(director.window.height)
         black_lyr.position = (0, 0)
-        black_lyr.opacity = 130
+        black_lyr.opacity = 140
 
         item = MenuItem('Continuar', self.on_quit)
         menu_items.append(item)
         menu.position = ( 0, -120)
-        item.position = ( 0, 160)
+        item.position = ( 0, 150)
         menu.font_title["font_name"] = "Tetrominoes"
         menu.font_title["color"] = (214, 178, 152, 255)
         menu.font_item["font_name"] = "Ravie"
@@ -49,10 +48,8 @@ class Pause(Layer):
         if(type(self.parent) == MultiplexLayer):
             self.parent.parent.on_unpause()
 
-    def on_key_press(self, key, modifiers):
-        key_string = symbol_string(key)
-        if(key_string == 'P'):
-            self.on_quit()
-        
-    def on_key_release(self, key, modifiers):
-        pass
+    def on_enter(self):
+        return super().on_enter()
+
+    def on_exit(self):
+        return super().on_exit()

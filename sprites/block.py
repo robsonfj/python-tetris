@@ -23,12 +23,6 @@ class Block(Sprite):
             #retangulo para calculo de colisao, como coodenadas realtivas a layer do jogo principal
             pos = game_controller.game_controller.main_game.point_to_local((self.x, self.y))
             self.cshape = collision_model.AARectShape( pos , self.width/2, self.height/2)
-            self.color_col = ColorLayer(255,0,255,255, int(self.width), int(self.height))
-            self.color_col.position = (self.cshape.center.x - self.width/2, self.cshape.center.y - self.height/2)
-            #game_controller.game_controller.main_game.add(self.color_col,z=1)#TODO REMOVER blocos para avaliacao de colisao
 
     def update_cshape_center(self, vector:Vector2):
         self.cshape.center = vector
-        self.color_col.position =(vector.x-self.width/2, vector.y-self.height/2)
-        self.color_col.width = int(self.width)
-        self.color_col.height= int(self.width)

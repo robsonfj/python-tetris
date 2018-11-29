@@ -59,6 +59,7 @@ class Pieces_Wall(Layer):
                     for block in value:
                         block.kill()
                         self.c_manager.remove_tricky(block)
+                        
                     removed_lines.append(key)
 
             for value in removed_lines:# para as linhas de blocos acima, mover uma linha para baixo
@@ -69,13 +70,18 @@ class Pieces_Wall(Layer):
                         self.same_line_blks[line-25] = self.same_line_blks[line]
                         for block in self.same_line_blks[line-25]:
                             block.y -= 25 # mover uma linha para baixo
+                            self.update_blk_cshape(block)
 
                 self.same_line_blks.pop(max(lines))# ultima linha agora ficou duplicada, entao remove a ultima linha da lista
                     
 
         except Exception as e:
             print("Error! Pieces_Wall check_line - ",e)
-    
+
+    def update_blk_cshape(self, block):#atualiza o retangulo de colisao do bloco para a ultima posicao conhecida
+        pos = self.point_to_world(block.position)# obtem a posicao do bloco real
+        pos = self.parent.point_to_local(pos)# obtem a posicao do bloco na layer da peca
+        block.update_cshape_center(pos)# reposiciona o retangulo de colisao para refletir a posicao real da peca
 
 
 class Wall_Limits(Layer):
