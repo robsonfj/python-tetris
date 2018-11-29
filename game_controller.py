@@ -10,6 +10,16 @@ from cocos.euclid import Vector2
 from scenes.main_game import Main_Game
 from scenes.start_screen import Start_Screen
 
+last_generated = ""
+pieces_generated = {#dicionario para armazenar quantas de cada peca ja foram inseridas no jogo
+    "S":0,
+    "S_inverted" :0,
+    "T"          :0,
+    "L"          :0,
+    "L_inverted" :0,
+    "I"          :0,
+    "Square"     :0}
+
 class Game_Controller:
     def __init__(self):
         pyglet.resource.path = ['assets', 'assets/blocks'] # caminho para imagens e sprites

@@ -34,7 +34,7 @@ class Ranking(Layer):
 
         item = MenuItem('Voltar', self.on_quit)
         menu_items.append(item)
-        item.position = ( 0, -120)
+        item.position = ( 0, -210)
         if(is_game_over):
             menu.title = "GAME OVER"
             black_lyr = ColorLayer(0, 0, 0,0)

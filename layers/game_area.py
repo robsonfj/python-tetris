@@ -1,6 +1,7 @@
 import pyglet
 import cocos
 import time
+import copy
 from cocos.euclid import Vector2
 from cocos.text import Label
 from cocos.layer import Layer
@@ -25,41 +26,48 @@ class Pieces_Wall(Layer):
 
         self.game_controller = game_controller.game_controller
         self.c_manager =  self.game_controller.c_manager# obtem instancia do gerenciador de colisao
-        
-
-        self.schedule_interval(self.check_line, 0.5) # checa se completou uma linha de blocos a cada 500ms
 
     def add_to_wall(self, block):
         if(type(block) == Block):
             try:
                 block.b_type = "Base_Block" # altera o tipo do bloco, agora faz parte da base
                 self.add(block)
-                self.same_line_blks[block.y].append(block)
-                
+                line = round((block.y-12.5)/25,0)
+                self.same_line_blks[line].append(block) # insere na linha correspondente
+
             except KeyError:# se obteve erro cria uma array e adiciona novamente
-                self.same_line_blks[block.y] = []
-                self.same_line_blks[block.y].append(block)
+                self.same_line_blks[line] = []
+                self.same_line_blks[line].append(block)
             finally:
+                self.update_blk_cshape(block)
                 self.c_manager.add(block) # adiciona bloco ao gerenciador de colisoes
+                self.schedule_interval(self.check_line, 0.6)# agenda uma checagem para remover linha
+                
 
     def process_piece(self, piece):
         for _ in range(0, len(piece.children)):
-            child = piece.children[0][1]
-            piece.remove(child)
-            child.anchor = Vector2()
-            child.position = piece.point_to_world(child.position)
-            self.add_to_wall(child)
-        piece.kill()
+            block = piece.children[0][1]
+            piece.remove(block)
+            block.anchor = Vector2()
+            pos = piece.point_to_world(block.position)
+            block.position = self.point_to_local(pos)
+            self.add_to_wall(block)
+        self.remove(piece)
 
     def check_line(self, time_elapsed):
         try:
+            self.unschedule(self.check_line)
             removed_lines = []
             for (key, value) in self.same_line_blks.items():
                 if(len(value) >= 16):# se a quantidade de blocos em uma linha for 16 ou maior elimina a linha e abaixa as pecas superiores
                     for block in value:
-                        block.kill()
-                        self.c_manager.remove_tricky(block)
-                        
+                        try:
+                            self.remove(block)
+                            self.c_manager.remove_tricky(block)
+                        except Exception as e:
+                            print("Error! Pieces_Wall check_line - ",e)
+
+                    self.same_line_blks[key] = None
                     removed_lines.append(key)
 
             for value in removed_lines:# para as linhas de blocos acima, mover uma linha para baixo
@@ -67,8 +75,8 @@ class Pieces_Wall(Layer):
                 lines = self.same_line_blks.keys()
                 for line in lines:
                     if(line > value):
-                        self.same_line_blks[line-25] = self.same_line_blks[line]
-                        for block in self.same_line_blks[line-25]:
+                        self.same_line_blks[value] = copy.copy(self.same_line_blks[line])
+                        for block in self.same_line_blks[value]:
                             block.y -= 25 # mover uma linha para baixo
                             self.update_blk_cshape(block)
 
