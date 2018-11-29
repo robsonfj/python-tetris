@@ -23,6 +23,18 @@ class Game_Info(Layer):
         self.score_label = Label("0",position=(880,350),font_name = "Ravie", align = "center",anchor_x = "center")# texto onde mostra o score atual
         self.add(self.score_label)
 
+        self.pause_label = Label("( ESC )", position=(820, 190), font_name="Ravie", align="center", anchor_x="center")
+        self.add(self.pause_label)
+
+        self.pause_label = Label("Sair", position=(885, 190), font_name="Ravie", align="center", anchor_x="center", color=(214, 178, 152, 255))
+        self.add(self.pause_label)
+
+        self.pause_label = Label("( P )", position=(820, 210), font_name="Ravie", align="center", anchor_x="center")
+        self.add(self.pause_label)
+
+        self.pause_label = Label(" Pause", position=(880, 210), font_name="Ravie", align="center", anchor_x="center", color=(214, 178, 152, 255))
+        self.add(self.pause_label)
+
         self.time_label = Label("00:00",position=(880,250),font_name = "Ravie", align = "center",anchor_x = "center")# texto onde mostra o score atual
         self.add(self.time_label )
         

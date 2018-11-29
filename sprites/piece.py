@@ -12,14 +12,6 @@ from sprites.block import Block
 import game_controller
 
 
-pieces_generated = {#dicionario para armazenar quantas de cada peca ja foram inseridas no jogo
-    "S":0,
-    "S_inverted" :0,
-    "T"          :0,
-    "L"          :0,
-    "L_inverted" :0,
-    "I"          :0,
-    "Square"     :0}
 Pieces = {#dicionario para armazenar a configuracao dos blocos e cores de cada peca
     "S"          :([ Vector2(), Vector2(-25, 0), Vector2( 0,25),  Vector2(25,25) ], "lightblue"),
     "S_inverted" :([ Vector2(), Vector2(25, 0), Vector2( 0,25), Vector2(-25,25)  ], "blue"),
@@ -39,30 +31,22 @@ def getPosition(offset:Vector2, initPos = Vector2()):
 
 
 def sort_new_piece():# sorteia uma peca nova randomicamente
+        pieces_generated = game_controller.pieces_generated
 
         keys = list(Pieces.keys())
         max_num = max(pieces_generated.values())
         count = 0
         for key in Pieces.keys():# remove pecas que ja foram mais usadas, para aumentar "randomicidade"
-            if(pieces_generated[key] >=  max_num-3):
+            if(game_controller.last_generated == key):
                 keys.remove(key)
-                count += 1
-                random.shuffle(keys)
-            if(count >= 2):
                 break
 
-
-        count = 1
-        chosen = random.uniform(1,len(keys))
-        random.seed(time.time()+chosen)
-        for key in keys:
-            if(count >= round(chosen,0)):
-                pieces_generated[key] += 1
-                return key
-            count += 1
-
-        pieces_generated["square"] += 1
-        return "square"
+        random.shuffle(keys)
+        chosen = random.choice(keys)
+        random.seed(time.time())
+        pieces_generated[chosen] += 1
+        game_controller.last_generated = chosen
+        return chosen
 
 class Piece(Sprite):
     def __init__(self, position:Vector2, p_type=None):
@@ -73,7 +57,8 @@ class Piece(Sprite):
         try:
             self.p_type = p_type == None and sort_new_piece() or p_type
             blocks_offsets = Pieces[self.p_type][0] # De acordo com o tipo retorna lista com ofsets dos blocos para formar a peca
-        except KeyError:
+        except Exception as e:
+            game_controller.pieces_generated["Square"] += 1
             self.p_type = "Square" # peca padrao caso valor passado seja incorreto
             blocks_offsets = Pieces[self.p_type][0]
         
