@@ -46,12 +46,11 @@ def sort_new_piece():# sorteia uma peca nova randomicamente
         for key in Pieces.keys():# remove pecas que ja foram mais usadas, para aumentar "randomicidade"
             if(pieces_generated[key] >=  max_num-3):
                 keys.remove(key)
-                pieces_generated[key] = pieces_generated[key] >= 10 and 0 or pieces_generated[key]
                 count += 1
+                random.shuffle(keys)
             if(count >= 2):
                 break
 
-        random.shuffle(keys)
 
         count = 1
         chosen = random.uniform(1,len(keys))

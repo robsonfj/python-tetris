@@ -1,6 +1,7 @@
 import pyglet
 import cocos
 import time
+import copy
 from cocos.euclid import Vector2
 from cocos.text import Label
 from cocos.layer import Layer
@@ -25,9 +26,6 @@ class Pieces_Wall(Layer):
 
         self.game_controller = game_controller.game_controller
         self.c_manager =  self.game_controller.c_manager# obtem instancia do gerenciador de colisao
-        
-
-        self.schedule_interval(self.check_line, 0.5) # checa se completou uma linha de blocos a cada 500ms
 
     def add_to_wall(self, block):
         if(type(block) == Block):
@@ -41,6 +39,7 @@ class Pieces_Wall(Layer):
                 self.same_line_blks[block.y].append(block)
             finally:
                 self.c_manager.add(block) # adiciona bloco ao gerenciador de colisoes
+                self.check_line()
 
     def process_piece(self, piece):
         for _ in range(0, len(piece.children)):
@@ -51,7 +50,7 @@ class Pieces_Wall(Layer):
             self.add_to_wall(child)
         piece.kill()
 
-    def check_line(self, time_elapsed):
+    def check_line(self):
         try:
             removed_lines = []
             for (key, value) in self.same_line_blks.items():
@@ -59,7 +58,8 @@ class Pieces_Wall(Layer):
                     for block in value:
                         block.kill()
                         self.c_manager.remove_tricky(block)
-                        
+
+                    self.same_line_blks[key] = None
                     removed_lines.append(key)
 
             for value in removed_lines:# para as linhas de blocos acima, mover uma linha para baixo
@@ -67,8 +67,8 @@ class Pieces_Wall(Layer):
                 lines = self.same_line_blks.keys()
                 for line in lines:
                     if(line > value):
-                        self.same_line_blks[line-25] = self.same_line_blks[line]
-                        for block in self.same_line_blks[line-25]:
+                        self.same_line_blks[value] = copy.copy(self.same_line_blks[line])
+                        for block in self.same_line_blks[value]:
                             block.y -= 25 # mover uma linha para baixo
                             self.update_blk_cshape(block)
 
