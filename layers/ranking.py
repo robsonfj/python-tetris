@@ -10,6 +10,7 @@ from cocos.menu import Menu
 from cocos.menu import MenuItem
 from cocos.menu import EntryMenuItem
 from cocos.sprite import Sprite
+from cocos.euclid import Vector2
 #local libs
 import file_saver
 import game_controller
@@ -21,8 +22,8 @@ e valor uma tupla com o nome do usuario e o tempo de jogo
 class Ranking(Layer):
     def __init__(self, is_game_over=False):
         Layer.__init__(self)
-        self.position = (0,0)
-        self.anchor = (0,0)
+        self.position = Vector2()
+        self.anchor = Vector2()
 
         self.fs = file_saver.File_Saver("rankings.txt") #nome para o arquivo de ranking
         self.rank_dict = {}
@@ -62,9 +63,6 @@ class Ranking(Layer):
         menu.on_quit = self.on_quit
         
         self.add(menu)
-
-    def on_key_press(self, symbol, modifiers):
-        print(symbol ==  key.ENTER)
         
     def save_rank(self):# salva a dicionario de ranks em arquivo
         str_data = ""
@@ -124,7 +122,9 @@ class Ranking(Layer):
 
     def on_enter(self):
         self.player_name = "Player"
-        #self.load_rank()
+        self.load_rank()
+        
+        return super().on_enter()
 
     def on_text(self, text):
         text = text.replace(" ","")

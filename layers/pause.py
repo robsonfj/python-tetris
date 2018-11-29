@@ -4,6 +4,7 @@ from cocos.layer import Layer
 from cocos.layer import ColorLayer
 from cocos.menu import Menu
 from cocos.menu import MenuItem
+from cocos.euclid import Vector2
 #local libs
 import game_controller
 

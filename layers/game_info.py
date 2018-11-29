@@ -4,6 +4,7 @@ from cocos.layer import Layer
 from cocos.text import Label
 from cocos.sprite import Sprite
 from cocos.actions import CallFunc
+from cocos.euclid import Vector2
 #local libs
 from sprites.piece import Piece
 from sprites.piece import piece_types
@@ -17,8 +18,8 @@ class Game_Info(Layer):
     def __init__(self):
         Layer.__init__(self)
         
-        self.position = (0,0)## posicao fixa da layer
-        self.anchor = (0,0)
+        self.position = Vector2()## posicao fixa da layer
+        self.anchor = Vector2()
 
         self.score_label = Label("0",position=(880,350),font_name = "Ravie", align = "center",anchor_x = "center")# texto onde mostra o score atual
         self.add(self.score_label)

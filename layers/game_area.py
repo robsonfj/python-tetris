@@ -18,8 +18,8 @@ class Pieces_Wall(Layer):
     def __init__(self):
         Layer.__init__(self)
         
-        self.position = (0,0)# posicao fixa da layer
-        self.anchor = (0,0)
+        self.position = Vector2()# posicao fixa da layer
+        self.anchor = Vector2()
         
         self.same_line_blks = {}# vai armazenar lista de blocos com mesma altura ( para remover quando completar a linha)
 
@@ -46,7 +46,7 @@ class Pieces_Wall(Layer):
         for _ in range(0, len(piece.children)):
             child = piece.children[0][1]
             piece.remove(child)
-            child.anchor = (0,0)
+            child.anchor = Vector2()
             child.position = piece.point_to_world(child.position)
             self.add_to_wall(child)
         piece.kill()
@@ -81,14 +81,13 @@ class Pieces_Wall(Layer):
 class Wall_Limits(Layer):
     def __init__(self):
         Layer.__init__(self)
-        self.anchor = (0,0)
+        self.anchor = Vector2()
         self.add(Sprite(image=pyglet.resource.image('background-tetris.png'), anchor=self.anchor))# Background Image
 
-        
         self.game_controller = game_controller.game_controller
         self.c_manager =  self.game_controller.c_manager# obtem instancia do gerenciador de colisao
 
-        tmp_block = Block((0,0), '')# para obter as dimencoes da imagem do bloco
+        tmp_block = Block(Vector2(), '')# para obter as dimencoes da imagem do bloco
         init_pos_x = 250 # meio eixo x da tela
         init_pos_y = tmp_block.height/2
         

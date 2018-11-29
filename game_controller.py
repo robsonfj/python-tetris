@@ -5,6 +5,7 @@ from cocos.director import director
 from cocos.scene import Scene
 from cocos.collision_model import CollisionManagerGrid
 from cocos.text import Label
+from cocos.euclid import Vector2
 #local libs
 from scenes.main_game import Main_Game
 from scenes.start_screen import Start_Screen
@@ -18,7 +19,8 @@ class Game_Controller:
         
     def init( self,wind_width=800, wind_height=600):
         director.init(width=wind_width, height=wind_height, caption="TETRIS", fullscreen=False, resizable=False)
-        self.c_manager = CollisionManagerGrid(0,wind_width, 0, wind_height, 25, 25)# inicializa gerenciador de colisao
+        pos = Vector2()
+        self.c_manager = CollisionManagerGrid(pos.x,wind_width, pos.y, wind_height, 25, 25)# inicializa gerenciador de colisao
         
     def run(self):
         director.run(Start_Screen())
