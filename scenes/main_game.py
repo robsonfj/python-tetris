@@ -20,6 +20,7 @@ from layers.game_info import Game_Info
 from layers.game_area import Pieces_Wall
 from layers.ranking import Ranking
 from sprites.piece import Piece
+from layers.pause import Pause
 import game_controller
 
 
@@ -48,29 +49,35 @@ class Main_Game(Scene):
         self.pieces_wall = Pieces_Wall()# iniciaiza o layer de bloco de pecas
         self.game_info_layer = Game_Info()# iniciaiza o layer de informacoes do jogo (informacoes no canto direito)
         self.game_over_lyr = Ranking(is_game_over=True)# iniciaiza o layer de game over para mostrar ranking
-        self.multi_layer = MultiplexLayer(Layer(), self.game_over_lyr)# iniciaiza o layer multiplo para alternar entre layer e mostrar o game over
+        self.pause_lyr = Pause()# iniciaiza o layer de pause do game
+        # iniciaiza o layer multiplo para alternar entre layer do input,mostrar o game over e pause
+        self.multi_layer = MultiplexLayer(Layer(), self.game_over_lyr, self.pause_lyr)
 
 
         self.add(self.wall_limits)# adiciona layer
         self.add(self.game_info_layer)# adiciona layer
         self.add(self.pieces_wall)# adiciona a a layer
-        self.add(self.multi_layer)# adiciona layer
         self.add(self.keybd_input)# adiciona layer
+        self.add(self.multi_layer)# adiciona layer
 
 
         self.add_next_piece()# inicializa a primeira peca
 
-        #self.schedule(self.check_collision) # checa colisao a cada frame
-        self.schedule_interval(self.count_time, 1)#inicia timer para contagem do tempo
+        self.start_timer()
+        
 
+    def start_timer(self):
+        self.schedule_interval(self.count_time, 1)#inicia timer para contagem do tempo
+    def stop_timer(self):
+        self.unschedule(self.count_time)#remove contagem do tempo
 
     def game_over(self):
         self.is_game_over = True
         self.c_manager.clear()# limpa lista de objetos com colisao
         self.unschedule(self.count_time)
-        self.remove(self.keybd_input)# remove processamento de input para peca
         self.multi_layer.switch_to(1)
         self.game_over_lyr.show_rank()
+
 
     def add_next_piece(self):
         self.currPiece = self.game_info_layer.obtain_next_piece() # obtem peca inicial(a primeira proxima peca...)
@@ -105,41 +112,17 @@ class Main_Game(Scene):
         self.pieces_wall.process_piece(self.currPiece)
         self.add_next_piece()
         
-
-    ''' KEYS INPUT '''
-
-    def time_delay(self, time_elapsed, key_string):# executado depois de um certo delay
-        self.unschedule(self.time_delay)
-        self.schedule_interval(self.key_action, 0.1, key_string)# move a peca a cada 100ms enquanto a tecla ainda estiver pressionada
-
-    def on_key_press(self, key, modifiers):
-        key_string = symbol_string(key)# obtem o valor em string da tecla pressionada 
-
-        self.key_action(0, key_string)#executa uma acao da tecla quando pressionado
-        self.schedule_interval(self.time_delay, 0.6, key_string)# espera 600ms antes de comecar a mover a peca rapidamente
-
-    def on_key_release(self, key, modifiers):# quando a tecla deixa de ser pressionada ele para de mover a peca rapidamente
-        self.unschedule(self.key_action)
-        self.unschedule(self.time_delay)
+    def on_pause(self):
+        self.pause()
+        self.stop_timer()
+        self.currPiece.stop_fall()
+        self.multi_layer.switch_to(2)
         
-    def key_action(self, time_elapsed, key_string):# para cada tecla executa a acao especifica
-
-        if( key_string == 'UP'):#TODO REMOVE
-            self.unschedule(self.currPiece.do_fall)
-            self.schedule_interval(self.currPiece.do_fall, 1)
-
-        if(not self.is_colliding_base and key_string == 'DOWN'):
-            self.unschedule(self.currPiece.do_fall)
-            self.schedule_interval(self.currPiece.do_fall, 0.03)
-
-        if(not self.is_colliding_left and key_string == 'LEFT'):
-            self.currPiece.move(Vector2(-25,0))
-
-        if(not self.is_colliding_right and key_string == 'RIGHT'):
-            self.currPiece.move(Vector2(25,0))
-
-        if(key_string == 'SPACE'):
-            self.currPiece.rotate()
+    def on_unpause(self):
+        self.resume()
+        self.start_timer()
+        self.currPiece.start_fall()
+        self.multi_layer.switch_to(0)
 
     def on_rank_exit(self):
         if(self.is_game_over):
@@ -155,3 +138,39 @@ class Main_Game(Scene):
             self.game_over_lyr.add_rank({score:(plyr_name, time_str)})
 
         return super().on_exit()
+
+
+    ''' KEYS INPUT '''
+    def key_action(self, time_elapsed, key_string):# para cada tecla executa a acao especifica
+        
+        if(key_string ==  'P'):
+            self.on_pause()
+
+        if(not self.is_colliding_base and key_string == 'DOWN'):
+            self.unschedule(self.currPiece.do_fall)
+            self.schedule_interval(self.currPiece.do_fall, 0.03)
+
+        if(not self.is_colliding_left and key_string == 'LEFT'):
+            self.currPiece.move(Vector2(-25,0))
+
+        if(not self.is_colliding_right and key_string == 'RIGHT'):
+            self.currPiece.move(Vector2(25,0))
+
+        if(key_string == 'SPACE'):
+            self.currPiece.rotate()
+
+
+    def time_delay(self, time_elapsed, key_string):# executado depois de um certo delay
+        self.unschedule(self.time_delay)
+        self.schedule_interval(self.key_action, 0.1, key_string)# move a peca a cada 100ms enquanto a tecla ainda estiver pressionada
+
+    def on_key_press(self, key, modifiers):
+        key_string = symbol_string(key)# obtem o valor em string da tecla pressionada 
+
+        self.key_action(0, key_string)#executa uma acao da tecla quando pressionado
+        self.schedule_interval(self.time_delay, 0.3, key_string)# espera 300ms antes de comecar a mover a peca rapidamente
+
+    def on_key_release(self, key, modifiers):# quando a tecla deixa de ser pressionada ele para de mover a peca rapidamente
+        self.unschedule(self.key_action)
+        self.unschedule(self.time_delay)
+        

@@ -34,13 +34,6 @@ class Game_Controller:
         
         self.main_game.start()
 
-    def pause_game(self):
-        pass
-
-    def unpause_game(self):
-        pass
-
-
     def on_key_press(self, key, modifiers):
         if(self.main_game):
             self.main_game.on_key_press(key, modifiers)

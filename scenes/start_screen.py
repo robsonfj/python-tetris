@@ -25,6 +25,7 @@ class Start_Screen(Scene) :
         self.add(black_fade)
 
         menu = Menu("TETRIS")
+        menu.position = ( 0, -80)
         menu.font_title["font_name"] = "Tetrominoes"
         menu.font_title["color"] = (214, 178, 152, 255)
         menu.font_item["font_name"] = "Ravie"

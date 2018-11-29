@@ -7,7 +7,6 @@ from cocos.actions import CallFunc
 from cocos.euclid import Vector2
 #local libs
 from sprites.piece import Piece
-from sprites.piece import piece_types
 
 POS_NX_PIECE = (874, 500)# define posicao fixa da proxima peca
 
