@@ -1,6 +1,7 @@
 import pyglet
 import random
 import time
+import copy
 from cocos.layer import Layer
 from cocos.sprite import Sprite
 from cocos.actions import MoveBy
@@ -47,7 +48,7 @@ piece_colors = {
 
 class Piece(Sprite):
     def __init__(self, position:Vector2, p_type=None):
-        Sprite.__init__(self, pyglet.resource.image("white.png"), opacity=0)
+        Sprite.__init__(self, pyglet.resource.image("block_template.png"), opacity=0)
         self.position = position
         self.anchor = Vector2()
         
@@ -93,15 +94,27 @@ class Piece(Sprite):
 
         self.update_blk_cshape()
 
-    def can_rotate(self, rotation:int):
+    def can_rotate(self, rotation:int):# verifica se na proxima rotacao havera uma colisao com algum bloco
+        c_manager = game_controller.game_controller.c_manager # collision manager
+
+        ghost_piece = copy.copy(self) 
+        ghost_piece.rotation += rotation
+        for (_,block) in ghost_piece.children:
+            real_blk_pos = ghost_piece.point_to_world(block.position)# obtem a posicao do bloco real
+            real_blk_pos = ghost_piece.parent.point_to_local(real_blk_pos)# obtem a posicao do bloco na layer da peca
+            for obj in c_manager.objs_touching_point(real_blk_pos.x, real_blk_pos.y):
+                if(not obj.b_type == "Piece"):
+                    return False
+                
         return True
 
-    def can_move(self, amount:Vector2): # verifica se na proxima posicao havera uma colisao com um bloco
+    def can_move(self, amount:Vector2): # verifica se na proxima posicao havera uma colisao com algum bloco
         main_game = game_controller.game_controller.main_game   # main game scene
         c_manager = game_controller.game_controller.c_manager # collision manager
         
         for (_,block) in self.children:
             real_blk_pos = self.point_to_world(block.position)
+            real_blk_pos = self.parent.point_to_local(real_blk_pos)
             for obj in c_manager.objs_touching_point(real_blk_pos.x + amount.x, real_blk_pos.y + amount.y):
                 if(obj.b_type == "Base_Floor" or obj.b_type == "Base_Block"):
                     if(amount.x == 0 and amount.y != 0):# se a peca colidiu somente com a base de pecas ou chao
@@ -112,15 +125,10 @@ class Piece(Sprite):
                 
         return True
 
-    def update_blk_cshape(self):
-        if(len(self.children) <= 0):
-            return
-
-        count = 0
-        for offset in piece_types[self.p_type]:
-            pos = getPosition(offset, self.position)
-            pos = self.parent.point_to_local(pos)
-            self.children[count][1].update_cshape_center(pos)# reposiciona o retangulo de colisao para refletir a posicao real da peca
-            count += 1
+    def update_blk_cshape(self):#atualiza os retangulos de colisao dos blocos para a ultima posicao conhecida
+        for (_,block) in self.children:
+            pos = self.point_to_world(block.position)# obtem a posicao do bloco real
+            pos = self.parent.point_to_local(pos)# obtem a posicao do bloco na layer da peca
+            block.update_cshape_center(pos)# reposiciona o retangulo de colisao para refletir a posicao real da peca
             
 

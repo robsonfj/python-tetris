@@ -99,27 +99,25 @@ class Wall_Limits(Layer):
             blk = Block((init_pos_x+ (tmp_block.width*16), init_pos_y+ (i*tmp_block.height)), block_color=BLOCK_WALL, b_type="Right_Wall")
             blk.anchor = (blk.width/2, blk.height/2)
             self.add(blk)
-            
-        self.c_manager.add(Collision_Rect(init_pos_x - tmp_block.width*1.5 , tmp_block.width, init_pos_y, 23*tmp_block.height, b_type="Left_Wall", layr=self))
-        self.c_manager.add(Collision_Rect(init_pos_x - tmp_block.width/2 + (tmp_block.width*16), tmp_block.width, init_pos_y, 23*tmp_block.height, b_type="Right_Wall", layr=self))
+
+        #cria retangulo de colisao para paredes esquerda e direita 
+        self.c_manager.add(Collision_Rect(init_pos_x - tmp_block.width*1.5 , tmp_block.width, init_pos_y, 23*tmp_block.height, b_type="Left_Wall"))
+        self.c_manager.add(Collision_Rect(init_pos_x - tmp_block.width/2 + (tmp_block.width*16), tmp_block.width, init_pos_y, 23*tmp_block.height, b_type="Right_Wall"))
 
         for i in range(16):
             blk = Block((init_pos_x+ (i*tmp_block.width),init_pos_y), block_color=BLOCK_WALL, b_type="Base_Floor")
             blk.anchor = (blk.width/2, blk.height/2)
             self.add(blk)
             
-        self.c_manager.add(Collision_Rect(init_pos_x-tmp_block.width/2, 16*tmp_block.width, init_pos_y-tmp_block.height/2, tmp_block.height, b_type="Base_Floor", layr=self))
+        #cria retangulo de colisao para chao
+        self.c_manager.add(Collision_Rect(init_pos_x-tmp_block.width/2, 16*tmp_block.width, init_pos_y-tmp_block.height/2, tmp_block.height, b_type="Base_Floor"))
 
 
 class Collision_Rect():
-     def __init__(self, x, width, y, height, b_type, layr):
+     def __init__(self, x, width, y, height, b_type):
          self.x = x
          self.width = width
          self.y = y
          self.height = height
          self.b_type = b_type
-         blk = ColorLayer(255, 255, 255,255, width=width, height=height)
-         blk.position = (x,y)
-         blk.anchor = (width/2, height/2)
-         #layr.add(blk)
          self.cshape = cocos.collision_model.AARectShape(Vector2(x + width/2, y + height/2), width/2, height/2)
