@@ -18,13 +18,14 @@ import game_controller
 class Start_Screen(Scene) :
     def __init__(self):
         Scene.__init__(self)
-        self.add(Sprite(image=pyglet.resource.image('background.png') , position=(self.anchor_x,self.anchor_y), scale=0.4))# Background Image
+        self.add(Sprite(image=pyglet.resource.image('background.png') , position=(self.anchor_x,self.anchor_y)))# Background Image
         
         black_fade = ColorLayer(0, 0, 0, 0)
         black_fade.opacity = 120
         self.add(black_fade)
 
         menu = Menu("TETRIS")
+        menu.position = ( 0, -60)
         menu.font_title["font_name"] = "Tetrominoes"
         menu.font_title["color"] = (214, 178, 152, 255)
         menu.font_item["font_name"] = "Ravie"
